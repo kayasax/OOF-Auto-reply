@@ -15,7 +15,9 @@ On every interactive invocation, emit this welcome before reasoning, planning, f
 
 > **Next:** I'll check your Outlook working hours, calendar, and holiday settings, then show you one simple summary to approve before anything is saved.
 >
-> **What to expect:** A browser will open Outlook on the web. You may need to choose your account, sign in, or complete MFA interactively. I will also retrieve public holidays from `date.nager.at`; Scout may ask you to allow that website.
+> **🌐 Outlook sign-in:** A browser will open Outlook on the web. You may need to choose your account, sign in, or complete MFA interactively.
+>
+> **📅 Public holidays:** I will retrieve public holidays from `date.nager.at`. Scout may ask you to allow that website.
 
 **✨ Quick and simple**
 

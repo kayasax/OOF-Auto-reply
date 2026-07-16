@@ -20,6 +20,8 @@ function main() {
 
   if (lines > 140) throw new Error(`SKILL.md is not a short orchestrator: ${lines} lines`);
   requireText(skill, "## 👋 Welcome", "welcome");
+  requireText(skill, "🌐 Outlook sign-in", "Outlook expectation icon");
+  requireText(skill, "📅 Public holidays", "holiday expectation icon");
   requireText(skill, "Created with care by Loïc Michel.", "creator credit");
   requireText(skill, "🔔 OOF_UPDATE_AVAILABLE", "prominent update notice");
   requireText(skill, "Before explicit confirmation", "confirmation gate");
