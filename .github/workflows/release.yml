@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p release/OOF-auto-reply
-          cp -R .gitignore CONFIG-REFERENCE.md HOWTO.md LICENSE README.md SKILL.md VERSION docs scripts release/OOF-auto-reply/
+          cp -R .gitignore CONFIG-REFERENCE.md HOWTO.md LICENSE README.md SKILL.md VERSION docs references scripts release/OOF-auto-reply/
           test ! -e release/OOF-auto-reply/.git
           (cd release && zip -r ../OOF-auto-reply-skill.zip OOF-auto-reply)
 

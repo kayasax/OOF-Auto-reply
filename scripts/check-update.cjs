@@ -19,7 +19,23 @@ function isNewer(candidate, current) {
   return false;
 }
 
+function selfTest() {
+  const cases = [
+    ["v0.1.5", "0.1.4", true],
+    ["0.2.0", "0.1.9", true],
+    ["1.0.0", "0.9.9", true],
+    ["0.1.4", "0.1.4", false],
+    ["0.1.3", "0.1.4", false],
+    ["invalid", "0.1.4", false],
+  ];
+  if (cases.some(([candidate, current, expected]) => isNewer(candidate, current) !== expected)) {
+    throw new Error("version comparison self-test failed");
+  }
+  console.log("OOF_UPDATE_CHECK_SELF_TEST_OK");
+}
+
 (async () => {
+  if (process.argv.includes("--self-test")) return selfTest();
   try {
     const response = await fetch(`https://api.github.com/repos/${repository}/releases/latest`, {
       headers: {
@@ -48,3 +64,5 @@ function isNewer(candidate, current) {
     console.log(JSON.stringify({ installed, updateAvailable: false, reason: "check-unavailable" }));
   }
 })();
+
+module.exports = { isNewer, parse };

@@ -40,6 +40,10 @@ That is normal from time to time. Routine checks run quietly in the background, 
 
 An old Power Automate flow or another automation may still be changing Automatic Replies after this skill saves them. Disable the old flow only after you have confirmed this skill behaves as expected for a few days. Tell the skill once it is disabled so it can stop warning you about the possible conflict.
 
+## 🔔 An update notice appeared
+
+`🔔 OOF_UPDATE_AVAILABLE` means a newer public release is available. The skill shows each version once and links to the clean release ZIP. A failed update check never blocks the normal Outlook and calendar run.
+
 ## 🧹 The browser says it is already in use
 
 The skill can recover from a stale Playwright browser lock by closing only the matching Playwright-managed Edge processes. It never closes all Edge windows indiscriminately.

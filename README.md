@@ -6,6 +6,8 @@ It keeps your Automatic Replies up to date for planned leave, public holidays, e
 
 > 👋 **First time here?** Import the skill, then run it once. It discovers your Outlook setup, shows you one short summary to approve, and takes care of the rest.
 
+*Created with care by Loïc Michel.*
+
 ## 📥 Install in Microsoft Scout
 
 1. Open **Settings** > **Skills** > **Import Skill**.
@@ -66,6 +68,6 @@ Share the latest `OOF-auto-reply-skill.zip` release asset, not a cloned reposito
 
 ## 🔔 Version and update notices
 
-The installed version is stored in `VERSION`. The skill checks the public latest-release endpoint during onboarding and every recurring OOF automation run. It warns only once per new version, then records that version locally to avoid daily spam. The notice links directly to the clean `OOF-auto-reply-skill.zip` asset. The request sends no personal, mailbox, calendar, or configuration data.
+The installed version is stored in `VERSION`. The skill checks the public latest-release endpoint during onboarding and every recurring OOF automation run. It warns only once per new version, then records that version locally to avoid daily spam. The prominent notice starts with `🔔 OOF_UPDATE_AVAILABLE` and links directly to the clean `OOF-auto-reply-skill.zip` asset. The request sends no personal, mailbox, calendar, or configuration data.
 
 To update, download and extract the new asset, then import its clean `OOF-auto-reply` folder and choose **Replace**. Never import a git clone.

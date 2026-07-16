@@ -6,10 +6,15 @@ const { createRequire } = require("node:module");
 const args = Object.fromEntries(
   process.argv.slice(2).map((arg) => {
     const [key, ...value] = arg.replace(/^--/, "").split("=");
-    return [key, value.join("=")];
+    return [key, value.join("=") || true];
   }),
 );
 const mode = args.mode || "full";
+const WORK_SCHEDULE_SELECTOR = 'button[role="tab"][value="workSchedule"]';
+
+function shouldReadWorkHours(runMode) {
+  return runMode !== "scheduled";
+}
 
 function detectCdpEndpoint() {
   if (args.cdp) return args.cdp;
@@ -44,7 +49,6 @@ function resolvePlaywrightRequire() {
   const localAppData = process.env.LOCALAPPDATA || "";
   const candidates = [
     path.join(process.cwd(), "package.json"),
-    path.join("C:\\DEV\\clawpilot", "package.json"),
     path.join(
       localAppData,
       "Programs",
@@ -61,10 +65,6 @@ function resolvePlaywrightRequire() {
   if (!packageJson) throw new Error("Playwright runtime was not found");
   return createRequire(packageJson);
 }
-
-const cdpEndpoint = detectCdpEndpoint();
-const hostRequire = resolvePlaywrightRequire();
-const { chromium } = hostRequire("playwright");
 
 const TEXT = {
   settings: /Paramètres|Settings/i,
@@ -83,7 +83,8 @@ async function isVisible(locator) {
 
 async function settingsDocument(page, route) {
   let document = page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last();
-  if ((await document.count()) > 0) return document;
+  const target = new URL(route).pathname.toLowerCase();
+  if (page.url().toLowerCase().includes(target) && (await document.count()) > 0) return document;
 
   await page.goto(route, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await page.waitForTimeout(1_500);
@@ -111,7 +112,7 @@ async function readWorkHours(page) {
     await calendar.click({ force: true });
     await page.waitForTimeout(300);
   }
-  const workHoursButton = document.locator('button[role="tab"][value="workSchedule"]').first();
+  const workHoursButton = document.locator(WORK_SCHEDULE_SELECTOR).first();
   if ((await workHoursButton.count()) === 0) throw new Error("Work hours button is unavailable");
   await workHoursButton.evaluate((button) => {
     button.scrollIntoView({ block: "center" });
@@ -149,7 +150,7 @@ async function readWorkHours(page) {
 async function readAutomaticRepliesAndSignature(page) {
   const document = await settingsDocument(
     page,
-    "https://outlook.cloud.microsoft/mail/options/mail/messageContent",
+    "https://outlook.cloud.microsoft/mail/options/accounts-category/automaticReply",
   );
   const automaticRepliesTab = document.locator('button[role="tab"][value="automaticReply"]').first();
   if ((await automaticRepliesTab.count()) === 0) throw new Error("Automatic Replies tab is unavailable");
@@ -197,7 +198,20 @@ async function readAutomaticRepliesAndSignature(page) {
   return { automaticReplies, signature };
 }
 
-(async () => {
+async function main() {
+  if (args["self-test"]) {
+    if (WORK_SCHEDULE_SELECTOR !== 'button[role="tab"][value="workSchedule"]') {
+      throw new Error("work schedule selector contract changed");
+    }
+    if (shouldReadWorkHours("scheduled")) {
+      throw new Error("scheduled mode must skip Work Hours");
+    }
+    console.log("OOF_OUTLOOK_DISCOVERY_SELF_TEST_OK");
+    return;
+  }
+  const cdpEndpoint = detectCdpEndpoint();
+  const hostRequire = resolvePlaywrightRequire();
+  const { chromium } = hostRequire("playwright");
   const started = Date.now();
   const browser = await chromium.connectOverCDP(cdpEndpoint);
   try {
@@ -214,12 +228,11 @@ async function readAutomaticRepliesAndSignature(page) {
       await page.waitForTimeout(2_000);
     }
 
-    const workHours =
-      mode === "scheduled"
-        ? null
-        : await readWorkHours(page).catch((error) => {
+    const workHours = shouldReadWorkHours(mode)
+      ? await readWorkHours(page).catch((error) => {
             throw new Error(`work-hours: ${error.message}`);
-          });
+          })
+      : null;
     const outlook = await readAutomaticRepliesAndSignature(page).catch((error) => {
       throw new Error(`outlook-settings: ${error.message}`);
     });
@@ -240,7 +253,9 @@ async function readAutomaticRepliesAndSignature(page) {
   } finally {
     await browser.close();
   }
-})().catch((error) => {
+}
+
+main().catch((error) => {
   console.error(JSON.stringify({ ok: false, error: error.message }, null, 2));
   process.exit(1);
 });
