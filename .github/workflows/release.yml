@@ -1,0 +1,39 @@
+name: Release clean skill bundle
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify release version
+        shell: bash
+        run: |
+          test "v$(cat VERSION)" = "${GITHUB_REF_NAME}"
+
+      - name: Build clean skill archive
+        shell: bash
+        run: |
+          mkdir -p release/OOF-auto-reply
+          cp -R .gitignore CONFIG-REFERENCE.md HOWTO.md LICENSE README.md SKILL.md VERSION docs scripts release/OOF-auto-reply/
+          test ! -e release/OOF-auto-reply/.git
+          (cd release && zip -r ../OOF-auto-reply-skill.zip OOF-auto-reply)
+
+      - name: Verify archive privacy
+        shell: bash
+        run: |
+          unzip -l OOF-auto-reply-skill.zip
+          ! unzip -l OOF-auto-reply-skill.zip | grep -E '(^|/)\.git(/|$)|config\.json|artifacts/|screenshots/|dev-test'
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: OOF-auto-reply-skill.zip

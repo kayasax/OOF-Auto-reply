@@ -1,0 +1,12 @@
+# Personal configuration generated during onboarding.
+config.json
+
+# Local verification and browser artifacts.
+artifacts/
+screenshots/
+*.log
+dev-test.png
+
+# Editor and operating-system files.
+.DS_Store
+Thumbs.db
