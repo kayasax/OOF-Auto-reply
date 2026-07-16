@@ -151,13 +151,10 @@ async function readAutomaticRepliesAndSignature(page) {
     page,
     "https://outlook.cloud.microsoft/mail/options/mail/messageContent",
   );
-  const account = document.getByRole("tab", { name: TEXT.account }).first();
-  if (await isVisible(account)) {
-    await account.click({ force: true });
-    await page.waitForTimeout(300);
-  }
-
-  await selectTab(document, TEXT.automaticReplies);
+  const automaticRepliesTab = document.locator('button[role="tab"][value="automaticReply"]').first();
+  if ((await automaticRepliesTab.count()) === 0) throw new Error("Automatic Replies tab is unavailable");
+  await automaticRepliesTab.evaluate((button) => button.click());
+  await page.waitForTimeout(300);
   const automaticReplies = await document.evaluate((root) => ({
     text: root.innerText.replace(/\s+/g, " "),
     controls: [...root.querySelectorAll('input, textarea, [contenteditable="true"], [role="switch"]')].map(
@@ -171,7 +168,12 @@ async function readAutomaticRepliesAndSignature(page) {
     ),
   }));
 
-  await selectTab(document, TEXT.signatures);
+  const signaturesTab = document
+    .locator('button[role="tab"][value="signatures-subcategory"]')
+    .first();
+  if ((await signaturesTab.count()) === 0) throw new Error("Signatures tab is unavailable");
+  await signaturesTab.evaluate((button) => button.click());
+  await page.waitForTimeout(300);
   const edit = document.getByRole("button", { name: TEXT.editSignature }).first();
   await edit.waitFor({ state: "visible", timeout: 5_000 }).catch(() => {});
   if (await isVisible(edit)) {
