@@ -48,7 +48,7 @@ Do not add progress narration after the welcome. Work silently until user action
    - **First run or incomplete setup:** read [references/onboarding.md](references/onboarding.md) and [references/outlook-discovery.md](references/outlook-discovery.md). Perform read-only discovery, then stop at the explicit confirmation gate.
    - **Confirmed interactive change:** read the relevant onboarding section and show the exact proposed private configuration, Outlook-visible text, and schedule change before writing.
    - **Recurring run:** an incomplete configuration ends immediately with `OOF_RUN_BLOCKED setup=incomplete`. A complete configuration routes to [references/daily-operation.md](references/daily-operation.md) and [references/automation.md](references/automation.md). Scheduled mode never repeats Work Hours discovery.
-5. After explicit onboarding confirmation, write the complete private configuration, then generate the recurring prompt with `node "<resourceDir>\scripts\render-automation.cjs" --mode=<production|test> --resource-dir="<resourceDir>"`. Use that output unchanged when creating the host schedule.
+5. After explicit onboarding confirmation, generate the recurring prompt with `node "<resourceDir>\scripts\render-automation.cjs" --mode=<production|test> --resource-dir="<resourceDir>"`, then apply the safe transition in [references/automation.md](references/automation.md). Discover duplicates before writing configuration, disable one existing owned automation before changing configuration, and update it in place. Create one only when none exists.
 
 ## Non-negotiable gates
 
@@ -59,6 +59,7 @@ Do not add progress narration after the welcome. Work silently until user action
 - Production writes require `setup.status == "complete"`, a confirmed production mode, and complete core settings. Test mode never writes Outlook settings.
 - Never expose `config.json`, mailbox content, calendar detail, host schedule identifiers, or local paths in chat beyond what the signed-in user needs.
 - Never disable a competing legacy flow. Ask the user to do that after the skill has been verified.
+- Never create a duplicate owned automation. Ambiguous matches stop without mutation and require the user to resolve the duplicate in Scout.
 
 ## Deterministic browser contract
 

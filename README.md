@@ -41,7 +41,7 @@ The skill reads your Outlook time zone and working hours, then uses recent sent 
 
 ### 3. 🎉 You're done
 
-After your approval, it saves your private settings and creates the recurring schedule on this host.
+After your approval, it saves your private settings and creates the recurring schedule on this host. If this skill already owns an `OOF Auto Reply` automation, setup updates it in place instead of creating a duplicate.
 
 > 🔐 You may need to sign in to Outlook in the browser once, and again if that session expires. Keep your assistant host running for scheduled runs to happen.
 
@@ -70,4 +70,4 @@ Share the latest `OOF-auto-reply-skill.zip` release asset, not a cloned reposito
 
 The installed version is stored in `VERSION`. The skill checks the public latest-release endpoint during onboarding and every recurring OOF automation run. It warns only once per new version, then records that version locally to avoid daily spam. The prominent notice starts with `🔔 OOF_UPDATE_AVAILABLE` and links directly to the clean `OOF-auto-reply-skill.zip` asset. The request sends no personal, mailbox, calendar, or configuration data.
 
-To update, download and extract the new asset, then import its clean `OOF-auto-reply` folder and choose **Replace**. Never import a git clone.
+To update, download and extract the new asset, then import its clean `OOF-auto-reply` folder and choose **Replace**. Never import a git clone. Re-running confirmed setup updates the existing owned automation in place. If Scout contains multiple matching automations, the skill stops without changing them and asks you to keep one.

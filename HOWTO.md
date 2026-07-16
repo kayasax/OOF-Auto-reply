@@ -32,6 +32,8 @@ Ask to manage the pre-OOF banner. You can choose whether it appears, how many da
 
 Ask to change the automatic-reply schedule. The skill updates the schedule on your current assistant host and records the chosen run time in `config.json`.
 
+The skill reuses the automation recorded in its private configuration. If that identifier is stale, it can recover one unambiguous automation created by this skill and update it in place. It never silently creates another schedule when multiple matching automations exist. In that case, it stops and asks you to keep one in Scout before trying again.
+
 ## 🔐 A sign-in prompt appeared
 
 That is normal from time to time. Routine checks run quietly in the background, but Outlook browser sessions can expire after security changes or long periods without use. The skill will stop safely and ask you to run it interactively. Complete the sign-in or MFA prompt in the displayed browser window, then let the skill continue.

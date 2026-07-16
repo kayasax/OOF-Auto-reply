@@ -20,7 +20,9 @@ function validateConfig(config) {
   if (!/^[A-Z]{2}$/.test(config?.holiday_country || "")) missingCore.push("holiday_country");
   if (config?.setup?.status !== "complete") missingGate.push("setup.status");
   if (!["production", "test"].includes(config?.setup?.mode)) missingGate.push("setup.mode");
-  if (!config?.setup?.scheduled_run_time) missingGate.push("setup.scheduled_run_time");
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(config?.setup?.scheduled_run_time || "")) {
+    missingGate.push("setup.scheduled_run_time");
+  }
   return {
     usable: missingCore.length === 0 && missingGate.length === 0,
     coreComplete: missingCore.length === 0,
@@ -40,11 +42,17 @@ function selfTest() {
   };
   const valid = validateConfig(complete);
   const invalid = validateConfig({ setup: { status: "incomplete", mode: "test" } });
+  const invalidTime = validateConfig({
+    ...complete,
+    setup: { ...complete.setup, scheduled_run_time: "8:30 tomorrow" },
+  });
   const legacy = validateConfig({ ...complete, setup: undefined });
   if (
     !valid.usable ||
     invalid.usable ||
     !invalid.missing.includes("setup.status") ||
+    invalidTime.usable ||
+    !invalidTime.missing.includes("setup.scheduled_run_time") ||
     !legacy.coreComplete ||
     legacy.usable
   ) {
