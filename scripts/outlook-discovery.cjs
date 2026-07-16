@@ -9,6 +9,7 @@ const args = Object.fromEntries(
     return [key, value.join("=")];
   }),
 );
+const mode = args.mode || "full";
 
 function detectCdpEndpoint() {
   if (args.cdp) return args.cdp;
@@ -211,9 +212,12 @@ async function readAutomaticRepliesAndSignature(page) {
       await page.waitForTimeout(2_000);
     }
 
-    const workHours = await readWorkHours(page).catch((error) => {
-      throw new Error(`work-hours: ${error.message}`);
-    });
+    const workHours =
+      mode === "scheduled"
+        ? null
+        : await readWorkHours(page).catch((error) => {
+            throw new Error(`work-hours: ${error.message}`);
+          });
     const outlook = await readAutomaticRepliesAndSignature(page).catch((error) => {
       throw new Error(`outlook-settings: ${error.message}`);
     });
@@ -221,6 +225,7 @@ async function readAutomaticRepliesAndSignature(page) {
       JSON.stringify(
         {
           ok: true,
+          mode,
           elapsedMs: Date.now() - started,
           url: page.url(),
           workHours,

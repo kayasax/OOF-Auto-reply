@@ -117,7 +117,9 @@ If `exploratory_calls` is not zero, the onboarding test has failed. Do not claim
      2. If `update_check.enabled` is not `false`, run `node "<resourceDir>\\scripts\\check-update.cjs"`.
      3. If `updateAvailable` is true and `latest` differs from `update_check.last_notified_version`, prepend exactly `OOF_UPDATE_AVAILABLE installed=<installed> latest=<latest> url=<url>` to the automation result, then persist `latest` to `update_check.last_notified_version`.
      4. If no update exists, the check is unavailable, or that version was already surfaced, do not mention updates and do not change the marker.
-     5. Continue the normal OOF daily operation. A failed update check must never block Outlook/calendar processing.
+     5. If `setup.status` is not `complete`, stop with `OOF_RUN_BLOCKED setup=incomplete`. A scheduled automation must never perform first-run onboarding or infer replacement configuration.
+     6. Run `node "<resourceDir>\\scripts\\outlook-discovery.cjs" --mode=scheduled` to read current Automatic Replies and signature state. Scheduled mode intentionally skips Work Hours discovery and uses the confirmed `timezone`, `working_days`, and `working_hours` from `config.json`.
+     7. Continue the normal OOF daily operation. A failed update check must never block Outlook/calendar processing.
    - Configure the automation notification policy as `auto`: routine current-version runs remain quiet; a new `OOF_UPDATE_AVAILABLE` result is worth surfacing. The warning contains only public release metadata and no mailbox, calendar, or configuration data.
    - Every automation run must end with `OOF_RUN_OK status=<away|workday|test> update=<none|<version>> outlook=<read|written|blocked>`.
    - Store its private identifier in `setup.host_schedule_id`, save the confirmed time in `setup.scheduled_run_time`, set `setup.mode` to the selected mode, and set `setup.status` to `complete`.
@@ -137,33 +139,36 @@ If `exploratory_calls` is not zero, the onboarding test has failed. Do not claim
 
 2. Run the scheduled update contract defined in onboarding step 6. This check is read-only, non-blocking, and warns only once per new release.
 
-3. Fetch the current and next year from `https://date.nager.at/api/v3/PublicHolidays/{year}/{COUNTRY_CODE}` when not already cached under the configured country. Persist only the holiday dates in `holiday_cache`.
+3. Require `setup.status == "complete"`. Scheduled runs use confirmed config hours and must not repeat Work Hours onboarding discovery.
 
-4. Read calendar events through at least 21 days ahead. A confirmed OOF day is an event with `showAs` equal to `oof` that is all-day or spans the configured working window. Ignore short timed OOF blocks such as lunch. Exclude tentative or unaccepted OOF events from the pre-OOF banner.
+4. Run `scripts/outlook-discovery.cjs --mode=scheduled` for current Automatic Replies/signature state.
 
-5. Set `away` when today is an OOF day or public holiday. Otherwise set `workday`.
+5. Fetch the current and next year from `https://date.nager.at/api/v3/PublicHolidays/{year}/{COUNTRY_CODE}` when not already cached under the configured country. Persist only the holiday dates in `holiday_cache`.
 
-6. For `away`:
+6. Read calendar events through at least 21 days ahead. A confirmed OOF day is an event with `showAs` equal to `oof` that is all-day or spans the configured working window. Ignore short timed OOF blocks such as lunch. Exclude tentative or unaccepted OOF events from the pre-OOF banner.
+
+7. Set `away` when today is an OOF day or public holiday. Otherwise set `workday`.
+
+8. For `away`:
    - Find the contiguous away block containing today, extending through adjacent OOF days, weekends, and public holidays.
    - Compute `return_date` as the next configured working day after the block, skipping weekends and public holidays.
    - Apply the confirmed away messages. If they remain unset, show neutral drafts and obtain explicit approval before first use.
    - Set the period from today at `00:00` to `return_date` at the configured workday start time.
 
-7. For `workday`:
+9. For `workday`:
    - Set the period from today's configured workday end time through the next configured working day at the configured workday start time.
    - Apply confirmed non-working-hours messages. If unset, show neutral drafts and obtain explicit approval before first use.
    - If `non_working_hours_upcoming_oof_notice.enabled` is true and the nearest confirmed future OOF begins within `pre_oof_banner.lead_time_days`, append the configured banner wording as a separate paragraph to both non-working-hours messages. Do not apply it to away messages.
 
-8. If `setup.mode` is `test`, perform a dry run:
-   - Never stop solely because `timezone`, `working_days`, `working_hours`, `holiday_country`, or message bodies are missing in `config.json`. Test mode exists to discover and validate those values.
-   - First repeat the full read-only Outlook discovery from onboarding. Treat its results as effective settings for this run without writing them back to config.
-   - Fetch holidays and calendar data using the effective detected settings. When a value remains unavailable after discovery, report that exact missing value but continue every independent read-only check.
+10. If `setup.mode` is `test`, perform a dry run:
+   - Require complete confirmed configuration like production mode.
+   - Fetch holidays and calendar data using confirmed config settings. When current Outlook state is unavailable, report that exact missing value but continue every independent read-only check.
    - Use Outlook only to read the current state and confirm that authenticated browser access works. Report the current Automatic Replies state, exact current bodies, default signature name, detected backup contact, and any existing leave banner.
    - Compute and show the exact Automatic Replies period, message bodies, and banner action that production mode would apply.
    - Never toggle a switch, edit a rich-text field, edit a signature, click Save, or perform a post-save verification.
    - Report the dry run as successful only for its read-only path. State plainly that an end-to-end Outlook write requires a dedicated test mailbox or an explicit production-mode approval.
 
-9. In `production` mode, apply Outlook settings with the appropriate browser mode:
+11. In `production` mode, apply Outlook settings with the appropriate browser mode:
    - Use a visible browser during onboarding and whenever an interactive user action is required.
    - Use the host's headless browser mode for routine scheduled runs only after a successful visible Outlook sign-in has established the browser session.
    - Navigate to the Outlook Automatic Replies settings page.
@@ -171,15 +176,15 @@ If `exploratory_calls` is not zero, the onboarding test has failed. Do not claim
    - Enable Automatic Replies and the scheduled period, set the dates and times, update internal and external rich-text message bodies, and save.
    - For rich-text editors, update HTML through the browser's supported editor interaction and dispatch an input event so Outlook persists the change.
 
-10. Reopen or refresh the Automatic Replies page and verify that the switch, period, and message bodies match the intended values. Stop and report a failure if verification does not match. Do not retry indefinitely.
+12. Reopen or refresh the Automatic Replies page and verify that the switch, period, and message bodies match the intended values. Stop and report a failure if verification does not match. Do not retry indefinitely.
 
-11. If `pre_oof_banner.enabled` is true:
+13. If `pre_oof_banner.enabled` is true:
    - Find the nearest confirmed future OOF block within the lead window.
    - Insert the approved banner at the start of the default signature only while that block is upcoming.
    - Remove an old banner if its dates are stale, the leave was cancelled, or the leave has started.
    - Keep the banner wording and the optional non-working-hours notice derived from the same configuration field.
 
-12. Detect a possible competing legacy flow when Outlook settings revert between runs. Reapply the intended settings, explain the likely conflict, and wait for the user to disable the old flow. Set `legacy_flow_disabled_by_user` only after user confirmation.
+14. Detect a possible competing legacy flow when Outlook settings revert between runs. Reapply the intended settings, explain the likely conflict, and wait for the user to disable the old flow. Set `legacy_flow_disabled_by_user` only after user confirmation.
 
 ## Browser lock recovery
 
