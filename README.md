@@ -66,6 +66,6 @@ Share the latest `OOF-auto-reply-skill.zip` release asset, not a cloned reposito
 
 ## 🔔 Version and update notices
 
-The installed version is stored in `VERSION`. On first-run onboarding, the skill checks the public latest-release endpoint for [kayasax/OOF-Auto-reply](https://github.com/kayasax/OOF-Auto-reply) and shows a non-blocking notice only when a newer release exists. The notice links directly to the clean `OOF-auto-reply-skill.zip` asset when available. The request sends no personal, mailbox, calendar, or configuration data.
+The installed version is stored in `VERSION`. The skill checks the public latest-release endpoint during onboarding and every recurring OOF automation run. It warns only once per new version, then records that version locally to avoid daily spam. The notice links directly to the clean `OOF-auto-reply-skill.zip` asset. The request sends no personal, mailbox, calendar, or configuration data.
 
 To update, download and extract the new asset, then import its clean `OOF-auto-reply` folder and choose **Replace**. Never import a git clone.

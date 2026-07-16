@@ -12,6 +12,13 @@
 | `setup.scheduled_run_time` | The confirmed local time for the recurring run. |
 | `setup.host_schedule_id` | The current host's private schedule identifier. Do not copy it to another host. |
 
+## Update-check fields
+
+| Field | Meaning |
+| --- | --- |
+| `update_check.enabled` | Runs the public GitHub release check during every scheduled OOF automation run. Defaults to `true`. |
+| `update_check.last_notified_version` | Latest release version already surfaced by the automation. Prevents repeated daily warnings. |
+
 ## Personal settings
 
 | Field | Meaning |
