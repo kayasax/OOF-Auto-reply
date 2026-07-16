@@ -5,6 +5,16 @@ description: "Keep Outlook Automatic Replies aligned with calendar OOF events, p
 
 # Outlook Automatic Replies
 
+## Installed version and updates
+
+**Installed version: 0.1.4**
+
+- Onboarding runs `scripts/check-update.cjs` after the welcome.
+- Every confirmed recurring automation runs the same check.
+- A newer release produces one `OOF_UPDATE_AVAILABLE` warning with the clean release ZIP URL.
+- `update_check.last_notified_version` prevents repeated daily warnings.
+- Update checks send no mailbox, calendar, configuration, or user data.
+
 ## Purpose and boundaries
 
 Use the user's calendar, public holidays, and Outlook web settings to maintain Automatic Replies and, when enabled, a pre-OOF signature notice.
