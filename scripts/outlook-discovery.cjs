@@ -11,6 +11,7 @@ const args = Object.fromEntries(
 );
 const mode = args.mode || "full";
 const WORK_SCHEDULE_SELECTOR = 'button[role="tab"][value="workSchedule"]';
+let panelRetryCount = 0;
 
 function shouldReadWorkHours(runMode) {
   return runMode !== "scheduled";
@@ -81,26 +82,51 @@ async function isVisible(locator) {
   return (await locator.count()) > 0 && locator.first().isVisible().catch(() => false);
 }
 
+async function openSettingsShell(page) {
+  let document = page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last();
+  if ((await document.count()) > 0) return document;
+
+  const direct = page.locator('button[aria-label="Paramètres"], button[aria-label="Settings"]').first();
+  await direct.waitFor({ state: "visible", timeout: 2_000 }).catch(() => {});
+  if (await isVisible(direct)) {
+    await direct.click();
+  } else {
+    const overflow = page
+      .getByRole("button", {
+        name: /Accéder à des fonctionnalités supplémentaires|Access additional features/i,
+      })
+      .first();
+    await overflow.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+    if (!(await isVisible(overflow))) throw new Error("Outlook settings launcher is unavailable");
+    await overflow.click();
+    const settingsItem = page.getByRole("menuitem", { name: TEXT.settings }).first();
+    await settingsItem.waitFor({ state: "visible", timeout: 5_000 });
+    await settingsItem.click();
+  }
+
+  document = page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last();
+  await document.waitFor({ state: "attached", timeout: 15_000 });
+  return document;
+}
+
 async function settingsDocument(page, route) {
   let document = page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last();
-  const target = new URL(route).pathname.toLowerCase();
-  const targetSelector = target.includes("workhoursandlocation")
-    ? WORK_SCHEDULE_SELECTOR
-    : target.includes("automaticreply")
-      ? 'button[role="tab"][value="automaticReply"]'
-      : null;
-  if ((await document.count()) > 0) {
-    const routeMatches = page.url().toLowerCase().includes(target);
-    const targetAvailable =
-      targetSelector !== null && (await document.locator(targetSelector).count()) > 0;
-    if (routeMatches || targetAvailable) return document;
-  }
+  if ((await document.count()) > 0) return document;
+
+  document = await openSettingsShell(page).catch(() =>
+    page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last(),
+  );
+  if ((await document.count()) > 0) return document;
 
   await page.goto(route, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await page.waitForTimeout(1_500);
 
   document = page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last();
   await document.waitFor({ state: "attached", timeout: 8_000 }).catch(() => {});
+  if ((await document.count()) === 0 && panelRetryCount === 0) {
+    panelRetryCount += 1;
+    document = await openSettingsShell(page);
+  }
   if ((await document.count()) === 0) throw new Error("Outlook settings document did not open");
   return document;
 }
@@ -117,12 +143,13 @@ async function readWorkHours(page) {
     page,
     "https://outlook.cloud.microsoft/mail/options/calendar/workHoursAndLocation",
   );
-  const calendar = document.getByRole("tab", { name: TEXT.calendar }).first();
+  const calendar = document.locator('button[role="tab"][value="calendar"]').first();
   if ((await isVisible(calendar)) && (await calendar.getAttribute("aria-selected")) !== "true") {
-    await calendar.click({ force: true });
+    await calendar.evaluate((button) => button.click());
     await page.waitForTimeout(300);
   }
   const workHoursButton = document.locator(WORK_SCHEDULE_SELECTOR).first();
+  await workHoursButton.waitFor({ state: "attached", timeout: 8_000 }).catch(() => {});
   if ((await workHoursButton.count()) === 0) throw new Error("Work hours button is unavailable");
   await workHoursButton.evaluate((button) => {
     button.scrollIntoView({ block: "center" });
@@ -131,7 +158,7 @@ async function readWorkHours(page) {
   await document
     .locator('input[aria-label*="Monday"][aria-label*="début"], input[aria-label*="Monday"][aria-label*="start"]')
     .first()
-    .waitFor({ state: "visible", timeout: 5_000 });
+    .waitFor({ state: "visible", timeout: 15_000 });
 
   const text = (await document.innerText()).replace(/\s+/g, " ");
   const days = await document.locator('input[type="checkbox"][aria-label]').evaluateAll((elements) =>
@@ -162,7 +189,13 @@ async function readAutomaticRepliesAndSignature(page) {
     page,
     "https://outlook.cloud.microsoft/mail/options/accounts-category/automaticReply",
   );
+  const account = document.locator('button[role="tab"][value="accounts-category"]').first();
+  if ((await isVisible(account)) && (await account.getAttribute("aria-selected")) !== "true") {
+    await account.evaluate((button) => button.click());
+    await page.waitForTimeout(300);
+  }
   const automaticRepliesTab = document.locator('button[role="tab"][value="automaticReply"]').first();
+  await automaticRepliesTab.waitFor({ state: "attached", timeout: 8_000 }).catch(() => {});
   if ((await automaticRepliesTab.count()) === 0) throw new Error("Automatic Replies tab is unavailable");
   await automaticRepliesTab.evaluate((button) => button.click());
   await page.waitForTimeout(300);
@@ -182,6 +215,7 @@ async function readAutomaticRepliesAndSignature(page) {
   const signaturesTab = document
     .locator('button[role="tab"][value="signatures-subcategory"]')
     .first();
+  await signaturesTab.waitFor({ state: "attached", timeout: 8_000 }).catch(() => {});
   if ((await signaturesTab.count()) === 0) throw new Error("Signatures tab is unavailable");
   await signaturesTab.evaluate((button) => button.click());
   await page.waitForTimeout(300);
@@ -251,6 +285,7 @@ async function main() {
         {
           ok: true,
           mode,
+          retries: panelRetryCount,
           elapsedMs: Date.now() - started,
           url: page.url(),
           workHours,

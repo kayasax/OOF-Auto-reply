@@ -34,8 +34,13 @@ function main() {
   );
   requireText(onboarding, "mailto:{backup_contact_email}", "after-hours fallback contact");
   requireText(discovery, 'button[role="tab"][value="workSchedule"]', "Work Hours selector");
+  requireText(discovery, 'button[role="tab"][value="calendar"]', "Calendar category selector");
+  requireText(discovery, 'button[role="tab"][value="accounts-category"]', "Account category selector");
   requireText(discovery, 'runMode !== "scheduled"', "scheduled Work Hours skip");
-  requireText(discovery, "targetAvailable", "existing OWA settings reuse");
+  requireText(discovery, "if ((await document.count()) > 0) return document", "existing OWA settings reuse");
+  requireText(discovery, "panelRetryCount === 0", "bounded settings-panel retry");
+  requireText(discovery, "retries: panelRetryCount", "settings retry reporting");
+  requireText(discovery, "Access additional features", "responsive OWA settings launcher");
   if (discovery.includes("-match 'mcp-msedge'")) {
     throw new Error("CDP detection must not depend on the mcp-msedge process marker");
   }
