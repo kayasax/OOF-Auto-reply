@@ -34,6 +34,18 @@ Include a distinct **Existing Outlook settings found** section with:
 
 If mailbox inference fails, say `Unavailable due to mailbox error`. Do not say `No saved body found`, silently disable a banner, or invent replacement wording.
 
+### Non-working-hours fallback
+
+If browser discovery and mandatory mailbox inference find no existing non-working-hours body, propose this fallback for both internal and external replies:
+
+> Thank you for your message!
+>
+> Please note I am out of the office with no access to my email / outside business hours ({WORKDAYS} {START} - {END} {TZ_ABBR}).
+>
+> If your message requires immediate assistance, I'm kindly asking you to send a message to [{backup_contact_email}](mailto:{backup_contact_email}) mailbox, so that your request can be directed to another available engineer.
+
+Render `{WORKDAYS}`, `{START}`, `{END}`, and `{TZ_ABBR}` from browser-detected work settings. Use `{backup_contact_email}` only when discovery found a backup contact. If it remains unknown, ask for it at the confirmation gate. This is a proposed default only and must be shown exactly before it is saved.
+
 ## Explicit confirmation gate
 
 Ask for one explicit confirmation or one correction response. If a required value is unknown, ask only for that value. The confirmation request must include the exact Outlook-visible wording, private schedule, mode, and settings that will be saved.

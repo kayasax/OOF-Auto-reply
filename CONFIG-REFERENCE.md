@@ -53,6 +53,8 @@ The four `messages` values are optional HTML message bodies:
 
 `null` means the skill proposes a neutral default during onboarding or the next explicit wording review. It must not silently invent personalized final wording.
 
+When no historical non-working-hours body is found, onboarding proposes the standard fallback documented in [references/onboarding.md](references/onboarding.md). Its work schedule and backup address remain template variables until detected and explicitly confirmed.
+
 ## Automatic cache
 
 `holiday_cache` stores public-holiday dates by country and year. The skill refreshes a missing year or a country that changed. You normally never need to edit it.

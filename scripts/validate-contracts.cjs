@@ -26,8 +26,19 @@ function main() {
   requireText(onboarding, "do not create or modify `config.json`", "onboarding configuration gate");
   requireText(onboarding, "do not create an enabled or disabled schedule", "onboarding automation gate");
   requireText(onboarding, "do not write to Outlook", "onboarding Outlook gate");
+  requireText(onboarding, "Thank you for your message!", "after-hours fallback greeting");
+  requireText(
+    onboarding,
+    "outside business hours ({WORKDAYS} {START} - {END} {TZ_ABBR})",
+    "after-hours fallback schedule",
+  );
+  requireText(onboarding, "mailto:{backup_contact_email}", "after-hours fallback contact");
   requireText(discovery, 'button[role="tab"][value="workSchedule"]', "Work Hours selector");
   requireText(discovery, 'runMode !== "scheduled"', "scheduled Work Hours skip");
+  requireText(discovery, "targetAvailable", "existing OWA settings reuse");
+  if (discovery.includes("-match 'mcp-msedge'")) {
+    throw new Error("CDP detection must not depend on the mcp-msedge process marker");
+  }
   requireText(skill, "Do not install a browser", "browser install prohibition");
   requireText(workflow, "references scripts", "release references bundle");
 

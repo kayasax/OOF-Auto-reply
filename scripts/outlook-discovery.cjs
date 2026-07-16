@@ -23,7 +23,7 @@ function detectCdpEndpoint() {
 
   const script = [
     "$ports = Get-CimInstance Win32_Process |",
-    "Where-Object { $_.Name -eq 'msedge.exe' -and $_.CommandLine -match 'mcp-msedge'",
+    "Where-Object { $_.Name -eq 'msedge.exe'",
     "-and $_.CommandLine -match '--remote-debugging-port=(\\d+)' } |",
     "ForEach-Object { [regex]::Match($_.CommandLine, '--remote-debugging-port=(\\d+)').Groups[1].Value } |",
     "Select-Object -Unique;",
@@ -84,7 +84,17 @@ async function isVisible(locator) {
 async function settingsDocument(page, route) {
   let document = page.locator('[role="dialog"]').filter({ hasText: TEXT.settings }).last();
   const target = new URL(route).pathname.toLowerCase();
-  if (page.url().toLowerCase().includes(target) && (await document.count()) > 0) return document;
+  const targetSelector = target.includes("workhoursandlocation")
+    ? WORK_SCHEDULE_SELECTOR
+    : target.includes("automaticreply")
+      ? 'button[role="tab"][value="automaticReply"]'
+      : null;
+  if ((await document.count()) > 0) {
+    const routeMatches = page.url().toLowerCase().includes(target);
+    const targetAvailable =
+      targetSelector !== null && (await document.locator(targetSelector).count()) > 0;
+    if (routeMatches || targetAvailable) return document;
+  }
 
   await page.goto(route, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await page.waitForTimeout(1_500);
