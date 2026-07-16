@@ -62,6 +62,8 @@ Just ask the skill. It can update your hours, holiday country, reply wording, le
 
 For more detail, read the friendly [HOWTO](HOWTO.md). The technical [configuration reference](CONFIG-REFERENCE.md) is there when you need it.
 
+Release history and upgrade notes are maintained in the [changelog](CHANGELOG.md).
+
 ## 🤝 Sharing with someone else
 
 Share the latest `OOF-auto-reply-skill.zip` release asset, not a cloned repository folder, `config.json`, screenshots, or local run artifacts. Each person gets their own detect-and-confirm setup.

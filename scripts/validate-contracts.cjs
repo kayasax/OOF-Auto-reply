@@ -17,6 +17,8 @@ function main() {
   const automation = read(path.join("references", "automation.md"));
   const discovery = read(path.join("scripts", "outlook-discovery.cjs"));
   const workflow = read(path.join(".github", "workflows", "release.yml"));
+  const changelog = read("CHANGELOG.md");
+  const version = read("VERSION").trim();
   const lines = skill.split(/\r?\n/).length;
 
   if (lines > 140) throw new Error(`SKILL.md is not a short orchestrator: ${lines} lines`);
@@ -77,8 +79,13 @@ function main() {
   }
   requireText(skill, "Do not install a browser", "browser install prohibition");
   requireText(workflow, "references scripts", "release references bundle");
+  requireText(workflow, "CHANGELOG.md", "release changelog bundle");
+  requireText(workflow, 'grep -Fq "## [$(cat VERSION)] - " CHANGELOG.md', "release changelog gate");
+  requireText(changelog, "## [Unreleased]", "unreleased changelog section");
+  requireText(changelog, `## [${version}] - `, "current-version changelog entry");
 
   const publicFiles = [
+    "CHANGELOG.md",
     "SKILL.md",
     "README.md",
     "HOWTO.md",
