@@ -71,8 +71,8 @@ Do not add progress narration after the welcome. Work silently until user action
 
 ## Completion
 
-After confirmed production setup, say: `🎉 You're all set! Your private settings are saved, and the recurring check is active on this host. I've opened the HOWTO so you know where to find things later.`
+After confirmed production setup, say: `🎉 You're all set! Your private settings are saved, and the recurring check is active on this host. Read the [HOWTO](https://github.com/kayasax/OOF-Auto-reply/blob/main/HOWTO.md) for usage and troubleshooting guidance.`
 
-After confirmed test setup, say: `🧪 Test setup is ready! Your private settings are saved and the dry-run schedule is disabled, so it cannot change your Outlook settings. Run it manually when you want to validate the read-only path.`
+After confirmed test setup, say: `🧪 Test setup is ready! Your private settings are saved and the dry-run schedule is disabled, so it cannot change your Outlook settings. Run it manually when you want to validate the read-only path. Read the [HOWTO](https://github.com/kayasax/OOF-Auto-reply/blob/main/HOWTO.md) for usage and troubleshooting guidance.`
 
-Open [HOWTO.md](HOWTO.md) in the host viewer. If unavailable, provide its local host link without pasting the guide.
+Always include the clickable public HOWTO link in the completion message. Do not claim the guide was opened.

@@ -22,6 +22,14 @@ function main() {
   requireText(skill, "## 👋 Welcome", "welcome");
   requireText(skill, "🌐 Outlook sign-in", "Outlook expectation icon");
   requireText(skill, "📅 Public holidays", "holiday expectation icon");
+  requireText(
+    skill,
+    "https://github.com/kayasax/OOF-Auto-reply/blob/main/HOWTO.md",
+    "completion HOWTO link",
+  );
+  if (skill.includes("I've opened the HOWTO")) {
+    throw new Error("completion must not claim the HOWTO was opened");
+  }
   requireText(skill, "Created with care by Loïc Michel.", "creator credit");
   requireText(skill, "🔔 OOF_UPDATE_AVAILABLE", "prominent update notice");
   requireText(skill, "Before explicit confirmation", "confirmation gate");
