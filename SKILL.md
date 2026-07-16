@@ -1,6 +1,6 @@
 ---
 name: "oof-auto-reply"
-description: "Keep Outlook Automatic Replies aligned with calendar OOF events, public holidays, and working hours. On invocation, immediately display the welcome before reasoning or tools. Use for automatic replies, out-of-office automation, non-working-hours replies, upcoming-leave signature notices, or replacing a Power Automate OOF flow."
+description: "Keep Outlook Automatic Replies aligned with calendar OOF events, public holidays, and working hours. Use for automatic replies, out-of-office automation, non-working-hours replies, upcoming-leave signature notices, or replacing a Power Automate OOF flow."
 ---
 
 # Outlook Automatic Replies
