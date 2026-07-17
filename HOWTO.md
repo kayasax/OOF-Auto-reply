@@ -46,6 +46,8 @@ An old Power Automate flow or another automation may still be changing Automatic
 
 `🔔 OOF_UPDATE_AVAILABLE` means a newer public release is available. The skill shows each version once and links to the clean release ZIP. A failed update check never blocks the normal Outlook and calendar run.
 
+If the existing automation was created before version 0.2.8, run the updated skill interactively once after import and approve the in-place automation migration. Importing files alone cannot rewrite Scout's persisted automation prompt. Once migrated to the stable bootstrap, later file replacements are loaded automatically on each scheduled run.
+
 ## 🧹 The browser says it is already in use
 
 The skill can recover from a stale Playwright browser lock by closing only the matching Playwright-managed Edge processes. It never closes all Edge windows indiscriminately.

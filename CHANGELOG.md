@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-07-17
+
+### Fixed
+
+- Replaced version-specific saved automation prompts with a stable bootstrap that reads the current installed run contract on every execution.
+- Corrected upgrade documentation: importing replacement files cannot rewrite a legacy prompt already persisted by Scout.
+- Added explicit migration detection for automations created before the stable bootstrap.
+
 ## [0.2.7] - 2026-07-17
 
 ### Fixed
@@ -105,7 +113,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.7...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.8...HEAD
+[0.2.8]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.4...v0.2.5

@@ -1,6 +1,6 @@
 # Recurring automation contract
 
-Create or update an automation only after explicit confirmation and only from `scripts/render-automation.cjs` output.
+Create or update an automation only after explicit confirmation and only from `scripts/render-automation.cjs` output. The rendered prompt is a stable bootstrap. It reads `references/recurring-run.md` from the installed skill on every execution, so later skill replacements update runtime behavior without rewriting the saved automation prompt.
 
 ## Host schedule
 
@@ -18,7 +18,7 @@ After the user confirms the complete setup or schedule change:
 
 1. Generate the exact prompt and deterministic schedule before calling any mutation tool. Convert `working_days` in configured order to full English day names. Use `every weekday at <time>` for Monday through Friday, `daily at <time>` for all seven days, or `every <day-list> at <time>` otherwise. Convert confirmed 24-hour `HH:MM` to Scout's 12-hour form, such as `8:30am` or `6pm`.
 2. If `setup.host_schedule_id` is present, call `m_get_automation` with that ID. Treat a returned automation as owned only when its name is exactly `OOF Auto Reply`. If the ID is missing, stale, or points to another name, continue to discovery without updating it.
-3. Call `m_list_automations`, then call `m_get_automation` for every exact-name `OOF Auto Reply` result. Candidate matches have the managed description above, the legacy description `Keeps Outlook Automatic Replies aligned with calendar OOF events, public holidays, and working hours.`, or a first prompt beginning `OOF Auto Reply recurring run, confirmed mode:`. The valid stored-ID match remains a candidate even if its description or prompt was edited.
+3. Call `m_list_automations`, then call `m_get_automation` for every exact-name `OOF Auto Reply` result. Candidate matches have the managed description above, the legacy description `Keeps Outlook Automatic Replies aligned with calendar OOF events, public holidays, and working hours.`, a first prompt beginning `OOF Auto Reply recurring run, confirmed mode:`, or a first prompt beginning `OOF Auto Reply stable bootstrap.`. The valid stored-ID match remains a candidate even if its description or prompt was edited.
 4. Deduplicate candidates by ID. Any exact-name result that is not a candidate is an ownership conflict. If multiple candidates exist, or any ownership conflict exists, do not create, update, disable, delete, or write configuration. Stop with `OOF_SETUP_BLOCKED automation=duplicate`, tell the user that conflicting `OOF Auto Reply` automations exist, and ask them to keep one owned automation in Scout before rerunning setup.
 5. If the one candidate has anything other than exactly one step, do not mutate it or write configuration. Stop with `OOF_SETUP_BLOCKED automation=steps` and ask the user to restore or remove the edited automation in Scout. The update API cannot safely remove extra steps.
 6. If exactly one safe candidate exists, first call `m_update_automation` with only its ID and `enabled: false`. Require `success: true` before writing configuration. This prevents an old production prompt from running during a mode or settings transition.
@@ -30,7 +30,7 @@ Never use name alone to update an automation whose description is neither the ma
 
 ## Required run contract
 
-The generated prompt enforces these steps:
+The generated bootstrap requires the automation to read the current installed `references/recurring-run.md`. That live file enforces these steps:
 
 1. Read the complete private configuration.
 2. Validate it with `scripts/config-status.cjs`.
@@ -42,3 +42,7 @@ The generated prompt enforces these steps:
 8. End with `OOF_RUN_OK status=<away|workday|test> update=<none|version> outlook=<read|written|blocked>`.
 
 A failed update check is silent and non-blocking. Never claim a release exists based only on the update endpoint result during development or publishing. Confirm publication with `gh release view` before reporting it.
+
+## Upgrade behavior
+
+Replacing skill files does not execute the skill and cannot mutate a prompt already persisted by Scout. Automations created before the stable bootstrap therefore require one explicit interactive setup run to migrate their saved prompt. After that migration, future replacements update `references/recurring-run.md`, which the unchanged bootstrap reads on every run. Never claim that importing a release rewrites a legacy saved automation.

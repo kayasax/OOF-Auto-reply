@@ -49,6 +49,7 @@ Do not add progress narration after the welcome. Work silently until user action
    - **Confirmed interactive change:** read the relevant onboarding section and show the exact proposed private configuration, Outlook-visible text, and schedule change before writing.
    - **Recurring run:** an incomplete configuration ends immediately with `OOF_RUN_BLOCKED setup=incomplete`. A complete configuration routes to [references/daily-operation.md](references/daily-operation.md) and [references/automation.md](references/automation.md). Scheduled mode never repeats Work Hours discovery.
 5. After explicit onboarding confirmation, generate the recurring prompt with `node "<resourceDir>\scripts\render-automation.cjs" --mode=<production|test> --resource-dir="<resourceDir>"`, then apply the safe transition in [references/automation.md](references/automation.md). Discover duplicates before writing configuration, disable one existing owned automation before changing configuration, and update it in place. Create one only when none exists.
+6. On an interactive invocation with complete setup, inspect the owned automation before routine work. If its prompt does not begin `OOF Auto Reply stable bootstrap.`, explain that importing files cannot rewrite persisted Scout automation state, then offer the exact in-place migration for explicit confirmation. Do not claim the update is active until the saved prompt is re-read and verified.
 
 ## Non-negotiable gates
 

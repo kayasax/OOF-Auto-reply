@@ -15,6 +15,7 @@ function main() {
   const skill = read("SKILL.md");
   const onboarding = read(path.join("references", "onboarding.md"));
   const automation = read(path.join("references", "automation.md"));
+  const recurringRun = read(path.join("references", "recurring-run.md"));
   const dailyOperation = read(path.join("references", "daily-operation.md"));
   const periodComputation = read(path.join("scripts", "compute-period.cjs"));
   const discovery = read(path.join("scripts", "outlook-discovery.cjs"));
@@ -68,6 +69,12 @@ function main() {
   requireText(automation, '`setup.status: "pending_automation"`', "incomplete transition state");
   requireText(automation, 'set `setup.status: "complete"`', "post-verification completion gate");
   requireText(automation, "Never delete an automation automatically", "automation deletion prohibition");
+  requireText(automation, "stable bootstrap", "stable automation bootstrap");
+  requireText(automation, "Replacing skill files does not execute the skill", "honest upgrade boundary");
+  requireText(recurringRun, "OOF_RUN_BLOCKED outlook=unread", "Outlook read failure gate");
+  requireText(recurringRun, "OOF_RUN_BLOCKED calendar=unread", "calendar read failure gate");
+  requireText(recurringRun, "compute-period.cjs", "live deterministic calculator contract");
+  requireText(recurringRun, "organizer-owned", "live organizer event contract");
   requireText(dailyOperation, "next available working day", "available-workday return calculation");
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");
@@ -114,6 +121,7 @@ function main() {
     path.join("references", "outlook-discovery.md"),
     path.join("references", "automation.md"),
     path.join("references", "daily-operation.md"),
+    path.join("references", "recurring-run.md"),
     path.join("scripts", "check-update.cjs"),
     path.join("scripts", "compute-period.cjs"),
     path.join("scripts", "config-status.cjs"),

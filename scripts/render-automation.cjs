@@ -16,21 +16,12 @@ function quote(value) {
 function render({ mode, resourceDir }) {
   if (!["production", "test"].includes(mode)) throw new Error("--mode must be production or test");
   const root = resourceDir || "<resourceDir>";
-  const config = path.join(root, "config.json");
-  const scripts = path.join(root, "scripts");
-  const writeRule =
-    mode === "test"
-      ? "Perform a read-only dry run. Never toggle, edit, save, or verify an Outlook write."
-      : "Perform the confirmed production operation, then reopen Outlook settings and verify the saved state.";
   return [
-    `OOF Auto Reply recurring run, confirmed mode: ${mode}.`,
-    `STEP 1. Read the complete private configuration at ${quote(config)}.`,
-    `STEP 2. Run node ${quote(path.join(scripts, "config-status.cjs"))} --config=${quote(config)}. If usable is not true, stop with OOF_RUN_BLOCKED setup=incomplete. Never perform onboarding from this schedule.`,
-    `STEP 3. If update_check.enabled is not false, run node ${quote(path.join(scripts, "check-update.cjs"))}. If updateAvailable is true and latest differs from update_check.last_notified_version, prepend 🔔 OOF_UPDATE_AVAILABLE installed=<installed> latest=<latest> url=<url> and persist latest to update_check.last_notified_version. Otherwise remain silent and do not change the marker. A failed update check never blocks later steps.`,
-    `STEP 4. Run node ${quote(path.join(scripts, "outlook-discovery.cjs"))} --mode=scheduled. Scheduled discovery skips Work Hours. Use only the confirmed timezone, working_days, and working_hours from the configuration. Never use playwright-browser_run_code.`,
-    `STEP 5. Read ${quote(path.join(root, "references", "daily-operation.md"))}. You MUST call the host calendar-read capability for an explicit interval from today through at least 21 days ahead. Outlook Automatic Replies settings are not calendar evidence. If that read fails or does not cover the interval, stop with OOF_RUN_BLOCKED calendar=unread. Treat a non-cancelled showAs=oof event as response-eligible unless declined or tentative: include organizer-owned, accepted, no-response, and unanswered events. Do not require the literal response value accepted. Run node ${quote(path.join(scripts, "compute-period.cjs"))} with today's local date, confirmed working days and hours, eligible OOF dates, and holiday dates. Use its JSON output as authoritative; do not calculate the expected period mentally. Render exact bodies from its returnDate and messageVariant before comparing with Outlook.`,
-    `STEP 6. ${writeRule} Never report no write required until the successful calendar read has produced: coverage end, nearest eligible OOF block or none, traversed non-working dates, expected start, expected end, return date, and message variant. Ordinary workday settings are not expected when the next-day traversal joins a weekend or holiday to eligible upcoming leave.`,
-    "STEP 7. End with OOF_RUN_OK status=<away|workday|test> update=<none|version> outlook=<read|written|blocked>.",
+    "OOF Auto Reply stable bootstrap.",
+    `Read the complete current run contract at ${quote(path.join(root, "references", "recurring-run.md"))} on every execution, then follow it exactly.`,
+    `Resolve <resourceDir> in that contract to ${quote(root)}.`,
+    "Do not use a cached, remembered, or previously saved version of the run contract.",
+    "The validated private configuration selects production or test mode.",
   ].join("\n");
 }
 
@@ -38,22 +29,14 @@ function selfTest() {
   const production = render({ mode: "production", resourceDir: "<resourceDir>" });
   const test = render({ mode: "test", resourceDir: "<resourceDir>" });
   const required = [
-    "OOF_RUN_BLOCKED setup=incomplete",
-    "🔔 OOF_UPDATE_AVAILABLE",
-    "--mode=scheduled",
-    "skips Work Hours",
-    "Never use playwright-browser_run_code",
-    "OOF_RUN_BLOCKED calendar=unread",
-    "include organizer-owned",
-    "compute-period.cjs",
-    "Use its JSON output as authoritative",
-    "nearest eligible OOF block",
-    "OOF_RUN_OK",
+    "OOF Auto Reply stable bootstrap",
+    "references\\recurring-run.md",
+    "on every execution",
+    "Do not use a cached",
+    "configuration selects production or test mode",
   ];
   if (!required.every((item) => production.includes(item))) throw new Error("production contract self-test failed");
-  if (!test.includes("read-only dry run") || test.includes("verify the saved state")) {
-    throw new Error("test mode contract self-test failed");
-  }
+  if (test !== production) throw new Error("stable bootstrap must not embed mode-specific behavior");
   console.log("OOF_AUTOMATION_PROMPT_SELF_TEST_OK");
 }
 
