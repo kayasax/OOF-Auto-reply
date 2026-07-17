@@ -77,6 +77,10 @@ function main() {
   requireText(recurringRun, "OOF_RUN_BLOCKED calendar=unread", "calendar read failure gate");
   requireText(recurringRun, "compute-period.cjs", "live deterministic calculator contract");
   requireText(recurringRun, "organizer-owned", "live organizer event contract");
+  requireText(recurringRun, "m_get_automation", "scheduled browser-mode inspection");
+  requireText(recurringRun, "m_update_automation", "scheduled visible-browser migration");
+  requireText(recurringRun, "outlook=browser-mode-migrated next=visible", "headless-run migration result");
+  requireText(recurringRun, "Do not attempt Outlook in the already-headless execution", "current-run safety stop");
   requireText(dailyOperation, "next available working day", "available-workday return calculation");
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");

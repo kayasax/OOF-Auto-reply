@@ -32,6 +32,8 @@ Never use name alone to update an automation whose description is neither the ma
 
 On every interactive invocation with complete setup, read the owned automation. If `browserHeadless` is not explicitly `false`, explain that Outlook authentication requires a visible Scout browser and ask for explicit confirmation to update only that automation to `browserHeadless: false`. Do not wait for a settings change or full onboarding. After confirmation, call `m_update_automation`, require `success: true`, then re-read and verify the value when the API exposes it. Never edit Scout's private automation files.
 
+The stable recurring contract also self-migrates an owned legacy automation. A headless run changes only its own `browserHeadless` field through `m_update_automation`, then stops before Outlook. The next run starts visibly. This lets release replacement converge safely even when the user does not immediately open an interactive skill chat.
+
 ## Required run contract
 
 The generated bootstrap requires the automation to read the current installed `references/recurring-run.md`. That live file enforces these steps:
