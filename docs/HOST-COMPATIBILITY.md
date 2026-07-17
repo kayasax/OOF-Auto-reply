@@ -22,4 +22,6 @@ This skill is assistant-neutral. A host needs the following capabilities to exec
 
 ## Browser lock recovery
 
-Some browser-automation hosts use a persistent Edge profile. If a stale lock prevents launch, close only browser processes whose command line identifies the host-managed Playwright profile, such as a path containing `ms-playwright\mcp-msedge`. Never terminate all Edge processes.
+When no TCP CDP endpoint is available, the Outlook discovery script launches Edge using its dedicated persistent profile under the local application-data directory. This also supports hosts that expose their own browser only through `--remote-debugging-pipe`, which cannot be attached to by a separate process.
+
+If a stale lock prevents launch, close only browser processes whose command line identifies the dedicated OOF Auto Reply profile. Never terminate all Edge processes and never automate the user's ordinary Edge profile.

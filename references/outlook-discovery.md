@@ -5,12 +5,13 @@
 Treat browser discovery as one bounded read-only operation.
 
 1. Run `node "<resourceDir>\scripts\outlook-discovery.cjs"` from the host-provided `resourceDir`.
-2. If and only if it reports no host-managed browser, navigate once to `https://outlook.cloud.microsoft/mail/`, then rerun the script once.
+2. The script first attaches to an available TCP CDP browser. When none exists, including when Scout launched its browser with `--remote-debugging-pipe`, it launches Edge with the skill's stable persistent profile. Do not treat the absence of a TCP debugging port as a terminal failure.
 3. Reuse an authenticated Outlook page. Do not repeatedly navigate to settings deep links.
 4. The script directly activates `button[role="tab"][value="workSchedule"]` through DOM `button.click()`, then waits for the Monday start-time input.
 5. Never use `playwright-browser_run_code` for discovery.
 6. Allow one retry only when the structured result identifies a transient panel-load timeout.
-7. Never install a browser or browser dependency during onboarding. If the host-managed browser cannot launch, report the launch failure and preserve the confirmation gate.
+7. Never install a browser or browser dependency during onboarding. If the persistent profile requires authentication, keep the interactive Edge window visible for up to five minutes while the user signs in, then continue discovery in the same run. A scheduled headless run must stop with `authentication-required` instead of falling back to stale Outlook state.
+8. Use a dedicated stable profile, overridable with `--user-data-dir` or `OOF_AUTO_REPLY_BROWSER_PROFILE`. Never use the user's ordinary Edge profile. If the dedicated profile is locked, report `persistent-profile-locked`; never terminate unrelated Edge processes.
 
 Before the detected-values summary, emit:
 

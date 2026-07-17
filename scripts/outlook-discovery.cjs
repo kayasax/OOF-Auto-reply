@@ -20,7 +20,7 @@ function shouldReadWorkHours(runMode) {
 function detectCdpEndpoint() {
   if (args.cdp) return args.cdp;
   if (process.env.PLAYWRIGHT_MCP_CDP_ENDPOINT) return process.env.PLAYWRIGHT_MCP_CDP_ENDPOINT;
-  if (process.platform !== "win32") throw new Error("Pass --cdp=<endpoint> on non-Windows hosts");
+  if (process.platform !== "win32") return null;
 
   const script = [
     "$ports = Get-CimInstance Win32_Process |",
@@ -38,18 +38,42 @@ function detectCdpEndpoint() {
     "Write-Output $port; exit 0 } } catch {} };",
     "exit 2",
   ].join(" ");
-  const port = execFileSync(
-    "powershell.exe",
-    ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script],
-    { encoding: "utf8", timeout: 5_000 },
-  ).trim();
-  return `http://127.0.0.1:${port}`;
+  try {
+    const port = execFileSync(
+      "powershell.exe",
+      ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script],
+      { encoding: "utf8", timeout: 5_000, stdio: ["ignore", "pipe", "ignore"] },
+    ).trim();
+    return port ? `http://127.0.0.1:${port}` : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistentProfileDir() {
+  if (args["user-data-dir"]) return path.resolve(String(args["user-data-dir"]));
+  if (process.env.OOF_AUTO_REPLY_BROWSER_PROFILE) {
+    return path.resolve(process.env.OOF_AUTO_REPLY_BROWSER_PROFILE);
+  }
+  const localAppData = process.env.LOCALAPPDATA;
+  if (!localAppData) throw new Error("browser-profile: LOCALAPPDATA is unavailable; pass --user-data-dir");
+  return path.join(localAppData, "OOF-Auto-Reply", "browser-profile");
 }
 
 function resolvePlaywrightRequire() {
   const localAppData = process.env.LOCALAPPDATA || "";
   const candidates = [
     path.join(process.cwd(), "package.json"),
+    path.join(
+      localAppData,
+      "Programs",
+      "Microsoft Scout",
+      "resources",
+      "app.asar.unpacked",
+      "node_modules",
+      "playwright",
+      "package.json",
+    ),
     path.join(
       localAppData,
       "Programs",
@@ -65,6 +89,52 @@ function resolvePlaywrightRequire() {
   const packageJson = candidates.find((candidate) => fs.existsSync(candidate));
   if (!packageJson) throw new Error("Playwright runtime was not found");
   return createRequire(packageJson);
+}
+
+async function openBrowserSession(chromium) {
+  const cdpEndpoint = detectCdpEndpoint();
+  if (cdpEndpoint) {
+    const browser = await chromium.connectOverCDP(cdpEndpoint);
+    const context = browser.contexts()[0];
+    if (!context) {
+      await browser.close();
+      throw new Error("browser-context: CDP browser has no context");
+    }
+    return { browser, context, transport: "cdp", close: () => browser.close() };
+  }
+
+  const profile = persistentProfileDir();
+  fs.mkdirSync(profile, { recursive: true });
+  try {
+    const context = await chromium.launchPersistentContext(profile, {
+      channel: "msedge",
+      headless: mode === "scheduled",
+    });
+    return { browser: null, context, transport: "persistent", close: () => context.close() };
+  } catch (error) {
+    const detail = /SingletonLock|ProcessSingleton|profile.*(?:use|lock)|user data directory is already in use/i.test(
+      error.message,
+    )
+      ? "persistent-profile-locked"
+      : "persistent-launch-failed";
+    throw new Error(`browser-launch: ${detail}: ${error.message}`);
+  }
+}
+
+async function requireAuthenticatedOutlook(page) {
+  if (!/login\.microsoftonline\.com|login\.live\.com/i.test(page.url())) return;
+  if (mode === "scheduled") {
+    throw new Error("authentication-required: run Outlook discovery interactively once");
+  }
+  await page
+    .waitForURL(/outlook\.(?:cloud\.microsoft|office\.com)\//i, {
+      waitUntil: "domcontentloaded",
+      timeout: 300_000,
+    })
+    .catch(() => {
+      throw new Error("authentication-required: visible Outlook sign-in was not completed within 5 minutes");
+    });
+  await page.waitForTimeout(2_000);
 }
 
 const TEXT = {
@@ -250,16 +320,22 @@ async function main() {
     if (shouldReadWorkHours("scheduled")) {
       throw new Error("scheduled mode must skip Work Hours");
     }
+    const oldLocalAppData = process.env.LOCALAPPDATA;
+    process.env.LOCALAPPDATA = "C:\\Users\\example\\AppData\\Local";
+    if (!persistentProfileDir().endsWith(path.join("OOF-Auto-Reply", "browser-profile"))) {
+      throw new Error("persistent profile path contract changed");
+    }
+    if (oldLocalAppData === undefined) delete process.env.LOCALAPPDATA;
+    else process.env.LOCALAPPDATA = oldLocalAppData;
     console.log("OOF_OUTLOOK_DISCOVERY_SELF_TEST_OK");
     return;
   }
-  const cdpEndpoint = detectCdpEndpoint();
   const hostRequire = resolvePlaywrightRequire();
   const { chromium } = hostRequire("playwright");
   const started = Date.now();
-  const browser = await chromium.connectOverCDP(cdpEndpoint);
+  const session = await openBrowserSession(chromium);
   try {
-    const context = browser.contexts()[0];
+    const { context } = session;
     let page =
       context.pages().find((candidate) => /outlook\.(?:cloud\.microsoft|office\.com)\/mail\/options\//i.test(candidate.url())) ||
       context.pages().find((candidate) => /outlook\.(?:cloud\.microsoft|office\.com)/i.test(candidate.url()));
@@ -271,6 +347,7 @@ async function main() {
       });
       await page.waitForTimeout(2_000);
     }
+    await requireAuthenticatedOutlook(page);
 
     const workHours = shouldReadWorkHours(mode)
       ? await readWorkHours(page).catch((error) => {
@@ -285,6 +362,7 @@ async function main() {
         {
           ok: true,
           mode,
+          browserTransport: session.transport,
           retries: panelRetryCount,
           elapsedMs: Date.now() - started,
           url: page.url(),
@@ -296,7 +374,7 @@ async function main() {
       ),
     );
   } finally {
-    await browser.close();
+    await session.close();
   }
 }
 

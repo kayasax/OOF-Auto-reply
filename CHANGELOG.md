@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-07-17
+
+### Fixed
+
+- Included organizer-owned and unanswered OOF events instead of requiring a literal accepted response.
+- Blocked recurring runs when the calendar cannot be read for the full lookahead interval.
+- Required calendar-derived evidence before declaring ordinary workday settings correct.
+- Added a deterministic, regression-tested period calculator covering the July 17 to August 3 pre-leave scenario.
+- Added a dedicated persistent Edge fallback when Scout exposes its managed browser through a debugging pipe instead of a TCP CDP port.
+- Added support for the current Microsoft Scout installation path and explicit authentication and profile-lock failures.
+- Kept the fallback browser open during interactive discovery so its stable profile can retain the sign-in used by scheduled runs.
+
 ## [0.2.6] - 2026-07-17
 
 ### Added
@@ -93,7 +105,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.7...HEAD
+[0.2.7]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.3...v0.2.4

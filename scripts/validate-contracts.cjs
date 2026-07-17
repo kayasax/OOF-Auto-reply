@@ -16,6 +16,7 @@ function main() {
   const onboarding = read(path.join("references", "onboarding.md"));
   const automation = read(path.join("references", "automation.md"));
   const dailyOperation = read(path.join("references", "daily-operation.md"));
+  const periodComputation = read(path.join("scripts", "compute-period.cjs"));
   const discovery = read(path.join("scripts", "outlook-discovery.cjs"));
   const workflow = read(path.join(".github", "workflows", "release.yml"));
   const changelog = read("CHANGELOG.md");
@@ -71,6 +72,13 @@ function main() {
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");
   requireText(dailyOperation, "notice return date and the Automatic Replies end date", "return-date consistency");
+  requireText(dailyOperation, "OOF_RUN_BLOCKED calendar=unread", "calendar-read failure gate");
+  requireText(dailyOperation, "Include events owned by the user (`organizer`)", "organizer OOF eligibility");
+  requireText(dailyOperation, "does not cover the interval", "calendar coverage gate");
+  requireText(dailyOperation, "calendar-derived expected switch", "calendar-derived comparison");
+  requireText(dailyOperation, "scripts/compute-period.cjs", "deterministic period calculation");
+  requireText(periodComputation, 'today: "2026-07-17"', "pre-leave regression date");
+  requireText(periodComputation, 'nextWeekLeave.expectedEnd !== "2026-08-03T09:00"', "August 3 return regression");
   requireText(discovery, 'button[role="tab"][value="workSchedule"]', "Work Hours selector");
   requireText(discovery, 'button[role="tab"][value="calendar"]', "Calendar category selector");
   requireText(discovery, 'button[role="tab"][value="accounts-category"]', "Account category selector");
@@ -78,6 +86,12 @@ function main() {
   requireText(discovery, "if ((await document.count()) > 0) return document", "existing OWA settings reuse");
   requireText(discovery, "panelRetryCount === 0", "bounded settings-panel retry");
   requireText(discovery, "retries: panelRetryCount", "settings retry reporting");
+  requireText(discovery, "launchPersistentContext", "persistent browser fallback");
+  requireText(discovery, 'browserTransport: session.transport', "browser transport reporting");
+  requireText(discovery, "authentication-required", "persistent profile authentication gate");
+  requireText(discovery, "timeout: 300_000", "interactive sign-in wait");
+  requireText(discovery, "persistent-profile-locked", "persistent profile lock error");
+  requireText(discovery, '"Microsoft Scout"', "current Scout runtime path");
   requireText(discovery, "Access additional features", "responsive OWA settings launcher");
   if (discovery.includes("-match 'mcp-msedge'")) {
     throw new Error("CDP detection must not depend on the mcp-msedge process marker");
@@ -101,6 +115,7 @@ function main() {
     path.join("references", "automation.md"),
     path.join("references", "daily-operation.md"),
     path.join("scripts", "check-update.cjs"),
+    path.join("scripts", "compute-period.cjs"),
     path.join("scripts", "config-status.cjs"),
     path.join("scripts", "outlook-discovery.cjs"),
     path.join("scripts", "render-automation.cjs"),

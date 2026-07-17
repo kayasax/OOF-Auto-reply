@@ -7,9 +7,13 @@ Use this reference only with a configuration that `scripts/config-status.cjs` re
 1. Treat the host-provided date and time as authoritative.
 2. Run scheduled Outlook discovery with `--mode=scheduled`. Use confirmed time zone, working days, and hours from `config.json`.
 3. Fetch public holidays for the current and next year from Nager.Date when not cached. Persist only holiday dates.
-4. Read calendar events at least 21 days ahead.
-5. Count an OOF day only when an accepted event has `showAs == "oof"` and is all-day or spans the configured working window. Ignore tentative, declined, and short timed OOF blocks.
+4. Call the host calendar-read capability for an explicit interval from today through at least 21 days ahead. Outlook Automatic Replies settings are not calendar evidence. If the calendar read fails, is unavailable, or does not cover the interval, stop with `OOF_RUN_BLOCKED calendar=unread`; never assume there is no upcoming leave.
+5. Count an OOF day only when an eligible event has `showAs == "oof"` and is all-day or spans the configured working window. Eligible means the event is not cancelled and its response is not declined or tentative. Include events owned by the user (`organizer`), explicitly accepted events, and OOF events with no response or an unanswered response. Do not require the literal response value `accepted`. Ignore short timed OOF blocks.
 6. Set status to `away` for an OOF day or public holiday. Otherwise set status to `workday`.
+
+Before comparing with Outlook, record the covered calendar interval, the nearest eligible OOF block or `none`, the traversed non-working dates, and the computed expected start, end, return date, and message variant. A zero-event result is valid only when it came from the successful calendar read above.
+
+Run `scripts/compute-period.cjs` with today's local date, the confirmed work schedule, eligible OOF dates, and holiday dates. Treat its JSON output as authoritative for the expected period and message variant. Do not calculate these values mentally. For the regression case where Friday 2026-07-17 is followed by a weekend and eligible OOF dates from 2026-07-20 through 2026-07-31, the required output ends at 2026-08-03 workday start.
 
 ## Computation
 
@@ -28,11 +32,11 @@ Read Outlook, calendar, and holidays, then show the exact period, bodies, and ba
 ## Production mode
 
 1. Stop safely when visible sign-in or MFA is required. Never bypass authentication headlessly.
-2. Apply the confirmed Automatic Replies switch, period, and rich-text bodies. Dispatch the editor input event required by Outlook, then save.
+2. Compare the calendar-derived expected switch, period, and exact rendered bodies with the discovered Outlook state. Never describe Outlook as matching merely because it matches the ordinary workday configuration. If any expected value differs, apply the expected switch, period, and rich-text bodies. Dispatch the editor input event required by Outlook, then save.
 3. Reopen or refresh settings and verify switch, period, and exact bodies. Do not retry indefinitely.
 4. If the pre-OOF banner is enabled, update only the confirmed default signature and verify it.
 5. If settings revert between runs, reapply once, report a possible competing flow, and wait for user confirmation that the old flow was disabled.
 
 ## Result
 
-Report status, exact reply period, return date when away or when a workday period extends through upcoming leave, banner action, upcoming-leave notice action, update state, and any required user action. Do not expose unrelated calendar details.
+Report status, calendar coverage end, nearest eligible OOF block or `none`, exact reply period, return date when away or when a workday period extends through upcoming leave, banner action, upcoming-leave notice action, update state, and any required user action. Do not expose event subjects or unrelated calendar details.
