@@ -63,8 +63,8 @@ function main() {
   requireText(automation, "exactly one step", "unexpected automation step gate");
   requireText(automation, '`triggerType: "schedule"`', "schedule trigger restoration");
   requireText(automation, '`oneShot: false`', "recurring execution restoration");
-  requireText(automation, '`browserHeadless: false`', "visible scheduled browser");
-  requireText(automation, "## Browser-mode migration", "existing headless automation migration");
+  requireText(automation, '`browserHeadless: true`', "headless scheduled browser");
+  requireText(automation, "## Browser-mode authentication recovery", "visible authentication recovery");
   requireText(automation, "first call `m_update_automation` with only its ID and `enabled: false`", "safe transition disable");
   requireText(automation, "deterministic schedule", "deterministic schedule rendering");
   requireText(automation, "Require `success: true`", "automation mutation result gate");
@@ -85,9 +85,9 @@ function main() {
   requireText(recurringRun, "any visible `working hours`", "away false-match rejection");
   requireText(recurringRun, "organizer-owned", "live organizer event contract");
   requireText(recurringRun, "m_get_automation", "scheduled browser-mode inspection");
-  requireText(recurringRun, "m_update_automation", "scheduled visible-browser migration");
-  requireText(recurringRun, "outlook=browser-mode-migrated next=visible", "headless-run migration result");
-  requireText(recurringRun, "Do not attempt Outlook in the already-headless execution", "current-run safety stop");
+  requireText(recurringRun, "outlook=authentication-required next=visible", "visible authentication migration result");
+  requireText(recurringRun, "browserHeadless: true", "headless mode restoration");
+  requireText(recurringRun, "Do not attempt credentials headlessly", "headless credential prohibition");
   requireText(dailyOperation, "next available working day", "available-workday return calculation");
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");
@@ -108,6 +108,8 @@ function main() {
   requireText(messageRendering, "away body contains non-working-hours or pre-OOF banner wording", "away wording rejection");
   requireText(messageRendering, 'internalKey !== "away_internal"', "away template selection regression");
   requireText(messageRendering, "internalCanonicalText", "canonical accessibility text");
+  requireText(messageRendering, "internalLinks", "semantic internal links");
+  requireText(messageRendering, "extractLinks", "HTML link extraction");
   requireText(messageRendering, ".replace(/\\s+/g, \" \")", "canonical whitespace normalization");
   requireText(messageRendering, '.replace(/\\s+([.,!?;:])/g, "$1")', "canonical punctuation normalization");
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
@@ -123,9 +125,13 @@ function main() {
   requireText(discovery, "collapse every whitespace run to one space", "accessibility whitespace normalization");
   requireText(discovery, "Never require a paragraph", "paragraph accessibility tolerance");
   requireText(discovery, "Do not rewrite or retry merely because paragraph boundaries differ", "paragraph retry prohibition");
+  requireText(discovery, "`Control+K`", "Outlook hyperlink command");
+  requireText(discovery, "role `link`", "semantic hyperlink verification");
+  requireText(discovery, "Plain text that merely spells the link label is a failed write", "plain-text link rejection");
   requireText(recurringRun, "before opening Outlook", "calendar-first execution order");
   requireText(recurringRun, "Do not narrate progress or explore Outlook", "non-exploratory recurring run");
-  requireText(discovery, "All recurring OOF automations must run with `browserHeadless: false`", "visible recurring authentication");
+  requireText(discovery, "normally run with `browserHeadless: true`", "headless recurring default");
+  requireText(discovery, "Visible mode is temporary", "temporary visible authentication");
   requireText(discovery, "skip Work hours", "scheduled Work Hours skip");
   requireText(discovery, "Never use `playwright-browser_run_code`", "run-code prohibition");
 
@@ -143,8 +149,8 @@ function main() {
       throw new Error(`redistributable runtime contract contains local coupling: ${forbidden}`);
     }
   }
-  if (activeRuntimeFiles.some((text) => text.includes("browserHeadless: true"))) {
-    throw new Error("OOF runtime contract must never schedule Outlook headlessly");
+  if (activeRuntimeFiles.some((text) => text.includes("All recurring OOF automations must run with `browserHeadless: false`"))) {
+    throw new Error("OOF runtime contract must not require permanently visible execution");
   }
   requireText(skill, "Do not install or launch a separate browser", "Scout browser lifecycle contract");
   if (workflow !== null) {

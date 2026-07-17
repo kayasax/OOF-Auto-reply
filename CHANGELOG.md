@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.18] - 2026-07-17
+
+### Fixed
+
+- Restored headless recurring execution with temporary visible runs only when Microsoft authentication is required.
+- Restored headless mode automatically after a verified visible authentication run.
+- Required configured HTML anchors to be created and verified as semantic Outlook hyperlinks rather than plain text.
+
 ## [0.2.17] - 2026-07-17
 
 ### Fixed
@@ -181,7 +189,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.17...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.18...HEAD
+[0.2.18]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.17...v0.2.18
 [0.2.17]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.16...v0.2.17
 [0.2.16]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.15...v0.2.16
 [0.2.15]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...v0.2.15

@@ -50,6 +50,13 @@ function htmlToCanonicalText(html) {
     .trim();
 }
 
+function extractLinks(html) {
+  return [...html.matchAll(/<a\s+[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi)].map((match) => ({
+    url: match[1],
+    text: htmlToCanonicalText(match[2]),
+  }));
+}
+
 function renderMessages(config, period) {
   const variant = period.messageVariant;
   if (!['away', 'non_working_hours'].includes(variant)) throw new Error(`unsupported message variant: ${variant}`);
@@ -80,6 +87,8 @@ function renderMessages(config, period) {
     external,
     internalCanonicalText: htmlToCanonicalText(internal),
     externalCanonicalText: htmlToCanonicalText(external),
+    internalLinks: extractLinks(internal),
+    externalLinks: extractLinks(external),
   };
 }
 
@@ -104,7 +113,8 @@ function selfTest() {
     !result.internal.includes("Friday, July 17, 2026 at 18:00") ||
     !result.external.includes("Monday, August 3, 2026 at 09:00") ||
     result.internalCanonicalText !==
-      "Away from Friday, July 17, 2026 at 18:00 until Monday, August 3, 2026 at 09:00."
+      "Away from Friday, July 17, 2026 at 18:00 until Monday, August 3, 2026 at 09:00." ||
+    extractLinks('<a href="https://example.test">Example link</a>')[0]?.url !== "https://example.test"
   ) {
     throw new Error("away message rendering self-test failed");
   }
@@ -122,4 +132,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { htmlToCanonicalText, renderMessages };
+module.exports = { extractLinks, htmlToCanonicalText, renderMessages };

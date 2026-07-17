@@ -35,7 +35,7 @@ Read Outlook, calendar, and holidays, then show the exact period, bodies, and ba
 
 ## Production mode
 
-1. Use the visible Scout-managed browser. When sign-in or MFA is required, wait for direct user interaction. If authentication is not completed, stop safely without changing Outlook.
+1. Use the Scout-managed browser headlessly by default. When sign-in or MFA is detected, follow the recurring contract's temporary visible authentication recovery. If authentication is not completed, stop safely without changing Outlook.
 2. Compare the calendar-derived expected switch, period, and exact rendered bodies with the discovered Outlook state. Never describe Outlook as matching merely because it matches the ordinary workday configuration. If any expected value differs, apply the expected switch, period, and rich-text bodies. Dispatch the editor input event required by Outlook, then save.
 3. Reopen or refresh settings and verify switch, period, and exact bodies. Do not retry indefinitely.
 4. If the pre-OOF banner is enabled, update only the confirmed default signature and verify it.

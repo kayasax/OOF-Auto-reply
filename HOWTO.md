@@ -36,7 +36,7 @@ The skill reuses the automation recorded in its private configuration. If that i
 
 ## 🔐 A sign-in prompt appeared
 
-That is normal from time to time. The recurring automation uses a visible Scout-managed browser because Outlook can require account selection, sign-in, or MFA again after security changes or session expiry. Complete the displayed prompt directly. If authentication is not completed, the skill stops safely without changing Outlook.
+That is normal from time to time. The recurring automation normally runs headlessly. If Outlook requires account selection, sign-in, or MFA after security changes or session expiry, the automation switches its next run to visible mode. Complete the displayed prompt directly. After a successful verified run, it returns to headless mode. If authentication is not completed, the skill stops safely without changing Outlook.
 
 ## 🔄 The setting did not stay changed
 
