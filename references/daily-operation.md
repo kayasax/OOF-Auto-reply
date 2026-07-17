@@ -5,7 +5,7 @@ Use this reference only with a configuration that `scripts/config-status.cjs` re
 ## Inputs and classification
 
 1. Treat the host-provided date and time as authoritative.
-2. Run scheduled Outlook discovery with `--mode=scheduled`. Use confirmed time zone, working days, and hours from `config.json`.
+2. Read `references/outlook-discovery.md` and use Scout's supported Playwright tools for scheduled Outlook discovery. Skip Work Hours and use confirmed time zone, working days, and hours from `config.json`.
 3. Fetch public holidays for the current and next year from Nager.Date when not cached. Persist only holiday dates.
 4. Call the host calendar-read capability for an explicit interval from today through at least 21 days ahead. Outlook Automatic Replies settings are not calendar evidence. If the calendar read fails, is unavailable, or does not cover the interval, stop with `OOF_RUN_BLOCKED calendar=unread`; never assume there is no upcoming leave.
 5. Count an OOF day only when an eligible event has `showAs == "oof"` and is all-day or spans the configured working window. Eligible means the event is not cancelled and its response is not declined or tentative. Include events owned by the user (`organizer`), explicitly accepted events, and OOF events with no response or an unanswered response. Do not require the literal response value `accepted`. Ignore short timed OOF blocks.

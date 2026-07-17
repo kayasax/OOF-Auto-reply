@@ -1,6 +1,6 @@
-# Host compatibility
+# Microsoft Scout compatibility
 
-This skill is assistant-neutral. A host needs the following capabilities to execute it fully:
+This package is a redistributable Microsoft Scout skill. It uses Scout's supported skill, Playwright browser, calendar, file, prompt, and automation capabilities. It must not depend on one developer machine's Scout installation directory or private state layout.
 
 | Capability | Used for |
 | --- | --- |
@@ -11,17 +11,12 @@ This skill is assistant-neutral. A host needs the following capabilities to exec
 | Recurring scheduler | Run the skill each day at the user-confirmed time. |
 | Interactive user prompt | Obtain the consolidated setup confirmation and handle browser sign-in. |
 
-## Portability rules
+## Redistribution rules
 
 - Do not hardcode an assistant name, tenant, account, email address, time zone, country, or message wording.
-- Use the host's calendar, browser, storage, prompting, and scheduling facilities. Do not require a specific product API.
+- Use Scout's calendar, Playwright browser, storage, prompting, and automation facilities.
 - Store host-specific scheduler identifiers only in the private `config.json`.
-- If the host lacks a scheduler, explain the limitation before onboarding confirmation and offer a host-native equivalent. Do not claim unattended scheduling is configured when it is not.
 - Browser sign-in, MFA, and permission prompts always require the user to interact directly. Never attempt to bypass them.
 - Use headless mode only after a successful visible sign-in. If authentication is required during a headless run, stop without changing Outlook, notify the user, and require a visible retry.
-
-## Browser lock recovery
-
-When no TCP CDP endpoint is available, the Outlook discovery script launches Edge using its dedicated persistent profile under the local application-data directory. This also supports hosts that expose their own browser only through `--remote-debugging-pipe`, which cannot be attached to by a separate process.
-
-If a stale lock prevents launch, close only browser processes whose command line identifies the dedicated OOF Auto Reply profile. Never terminate all Edge processes and never automate the user's ordinary Edge profile.
+- Never inspect or edit Scout's private automation files. Use `m_get_automation`, `m_list_automations`, `m_create_automation`, and `m_update_automation`.
+- Never inspect browser processes, attach to CDP, launch Edge from Node.js, choose a filesystem profile, or load dependencies from Scout's installation directory.

@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-07-17
+
+### Fixed
+
+- Replaced local CDP, process, Scout-installation, and filesystem-profile browser coupling with supported Scout Playwright tools.
+- Added redistribution contract tests that reject machine-specific browser and automation-state dependencies.
+- Clarified that Microsoft Scout owns browser lifecycle, authentication state, and automation mutations.
+
 ## [0.2.8] - 2026-07-17
 
 ### Fixed
@@ -113,7 +121,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.8...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.9...HEAD
+[0.2.9]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.5...v0.2.6

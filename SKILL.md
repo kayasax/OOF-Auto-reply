@@ -64,12 +64,12 @@ Do not add progress narration after the welcome. Work silently until user action
 
 ## Deterministic browser contract
 
-- Use `scripts/outlook-discovery.cjs` for Outlook settings discovery.
-- Work Hours activation must remain a direct DOM `click()` on `button[role="tab"][value="workSchedule"]`.
-- Scheduled mode must use `--mode=scheduled`, skip Work Hours, and use confirmed configuration values.
+- Use only Scout's supported Playwright browser tools for Outlook discovery and writes.
+- Use snapshots and accessible controls. Do not depend on local Scout installation files, CDP ports, OS processes, or filesystem browser profiles.
+- Scheduled mode must skip Work Hours and use confirmed configuration values.
 - Do not use `playwright-browser_run_code`.
-- Do not install a browser or browser dependency during onboarding. Report a host-browser launch failure instead.
-- Allow one retry only for a structured transient panel-load timeout. Do not explore processes, profiles, selectors, or deep links during normal onboarding.
+- Do not install or launch a separate browser during onboarding. Scout owns browser lifecycle and authentication state.
+- Allow one retry only when a new snapshot confirms a transient panel load. Do not explore processes, profiles, or local application directories.
 
 ## Completion
 

@@ -4,20 +4,20 @@
 
 Treat browser discovery as one bounded read-only operation.
 
-1. Run `node "<resourceDir>\scripts\outlook-discovery.cjs"` from the host-provided `resourceDir`.
-2. The script first attaches to an available TCP CDP browser. When none exists, including when Scout launched its browser with `--remote-debugging-pipe`, it launches Edge with the skill's stable persistent profile. Do not treat the absence of a TCP debugging port as a terminal failure.
-3. Reuse an authenticated Outlook page. Do not repeatedly navigate to settings deep links.
-4. The script directly activates `button[role="tab"][value="workSchedule"]` through DOM `button.click()`, then waits for the Monday start-time input.
-5. Never use `playwright-browser_run_code` for discovery.
-6. Allow one retry only when the structured result identifies a transient panel-load timeout.
-7. Never install a browser or browser dependency during onboarding. If the persistent profile requires authentication, keep the interactive Edge window visible for up to five minutes while the user signs in, then continue discovery in the same run. A scheduled headless run must stop with `authentication-required` instead of falling back to stale Outlook state.
-8. Use a dedicated stable profile, overridable with `--user-data-dir` or `OOF_AUTO_REPLY_BROWSER_PROFILE`. Never use the user's ordinary Edge profile. If the dedicated profile is locked, report `persistent-profile-locked`; never terminate unrelated Edge processes.
+1. Use Scout's `playwright-browser_navigate`, `playwright-browser_snapshot`, `playwright-browser_click`, `playwright-browser_type`, and `playwright-browser_press_key` tools. Do not launch a browser process, inspect process command lines, attach through CDP, select a local profile, or load Playwright from Scout installation files.
+2. Navigate once to `https://outlook.cloud.microsoft/mail/` and reuse that Scout-managed page. Do not repeatedly navigate to settings deep links.
+3. If Scout shows Microsoft sign-in or MFA during an interactive run, wait for the user to complete it in the visible Scout-managed browser. During a scheduled headless run, stop with `OOF_RUN_BLOCKED outlook=authentication-required`.
+4. Open Settings from the current Outlook page. Use snapshots and accessible names to select Calendar, Work hours and location, Account, Automatic replies, and Signatures. The labels may be localized.
+5. On interactive onboarding, read time zone, selected working days, and start and end times from Work hours and location. On scheduled runs, skip Work hours and use only the confirmed configuration.
+6. Read the Automatic Replies switch, scheduled-period controls, internal body, external-send toggle, external body, and the configured default signature. Do not click Save or change any value during discovery.
+7. Never use `playwright-browser_run_code`, arbitrary JavaScript evaluation, browser installation, filesystem browser profiles, or OS process inspection.
+8. Allow one retry only after a fresh snapshot shows that the expected Outlook settings panel is still loading. If the second snapshot cannot expose the required controls, stop with `OOF_RUN_BLOCKED outlook=unread`.
 
 Before the detected-values summary, emit:
 
-`OOF_BROWSER_RECEIPT script=1 retries=<0-1> exploratory_calls=0 elapsed_ms=<N>`
+`OOF_BROWSER_RECEIPT scout_tools=1 retries=<0-1> run_code=0 elapsed_ms=<N>`
 
-If exploratory calls are not zero, do not claim deterministic browser discovery succeeded.
+If `run_code` is not zero, do not claim supported Scout browser discovery succeeded.
 
 ## Mandatory mailbox inference
 

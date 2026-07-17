@@ -37,7 +37,7 @@ The generated bootstrap requires the automation to read the current installed `r
 3. Check the public latest release without blocking Outlook or calendar work.
 4. Emit a prominent `🔔 OOF_UPDATE_AVAILABLE` notice only when the release is newer and differs from `update_check.last_notified_version`, then persist that version.
 5. Stop incomplete setup with `OOF_RUN_BLOCKED setup=incomplete` and never perform onboarding from a schedule.
-6. Run Outlook discovery with `--mode=scheduled`, which skips Work Hours.
+6. Run Outlook discovery through Scout's supported Playwright tools, skipping Work Hours during scheduled execution.
 7. Perform the daily operation in the confirmed mode.
 8. End with `OOF_RUN_OK status=<away|workday|test> update=<none|version> outlook=<read|written|blocked>`.
 
