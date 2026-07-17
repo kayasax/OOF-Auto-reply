@@ -108,8 +108,6 @@ function main() {
   requireText(messageRendering, "away body contains non-working-hours or pre-OOF banner wording", "away wording rejection");
   requireText(messageRendering, 'internalKey !== "away_internal"', "away template selection regression");
   requireText(messageRendering, "internalCanonicalText", "canonical accessibility text");
-  requireText(messageRendering, "internalLinks", "semantic internal links");
-  requireText(messageRendering, "extractLinks", "HTML link extraction");
   requireText(messageRendering, ".replace(/\\s+/g, \" \")", "canonical whitespace normalization");
   requireText(messageRendering, '.replace(/\\s+([.,!?;:])/g, "$1")', "canonical punctuation normalization");
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
@@ -125,9 +123,9 @@ function main() {
   requireText(discovery, "collapse every whitespace run to one space", "accessibility whitespace normalization");
   requireText(discovery, "Never require a paragraph", "paragraph accessibility tolerance");
   requireText(discovery, "Do not rewrite or retry merely because paragraph boundaries differ", "paragraph retry prohibition");
-  requireText(discovery, "`Control+K`", "Outlook hyperlink command");
-  requireText(discovery, "role `link`", "semantic hyperlink verification");
-  requireText(discovery, "Plain text that merely spells the link label is a failed write", "plain-text link rejection");
+  requireText(discovery, "Treat this automation path as plain text", "plain-text Outlook body contract");
+  requireText(discovery, "Do not emit HTML tags", "HTML input prohibition");
+  requireText(discovery, "Literal URLs are content and must appear exactly", "literal URL verification");
   requireText(recurringRun, "before opening Outlook", "calendar-first execution order");
   requireText(recurringRun, "Do not narrate progress or explore Outlook", "non-exploratory recurring run");
   requireText(discovery, "normally run with `browserHeadless: true`", "headless recurring default");
