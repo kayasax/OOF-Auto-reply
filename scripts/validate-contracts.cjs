@@ -91,6 +91,11 @@ function main() {
   requireText(recurringRun, "authentication-recovery run only", "visible recovery-only run");
   requireText(recurringRun, "outlook=authentication-complete next=headless", "headless restoration result");
   requireText(recurringRun, "Do not read calendar, compare bodies, write Outlook", "visible work prohibition");
+  requireText(recurringRun, "End with a short human-readable summary", "human-readable run ending");
+  requireText(recurringRun, "never a raw contract token", "raw success token prohibition");
+  requireText(recurringRun, "Omit implementation details", "implementation detail suppression");
+  requireText(recurringRun, "The next scheduled run will be headless", "readable summary example");
+  requireText(automation, "Do not expose raw success tokens", "automation summary boundary");
   requireText(dailyOperation, "next available working day", "available-workday return calculation");
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");

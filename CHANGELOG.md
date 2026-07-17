@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.21] - 2026-07-17
+
+### Fixed
+
+- Replaced raw success-contract output with a concise human-readable run summary.
+- Kept structured blocked codes only for actionable failures with plain-language guidance.
+
 ## [0.2.20] - 2026-07-17
 
 ### Fixed
@@ -203,7 +210,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.20...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.21...HEAD
+[0.2.21]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.20...v0.2.21
 [0.2.20]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.19...v0.2.20
 [0.2.19]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.18...v0.2.19
 [0.2.18]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.17...v0.2.18

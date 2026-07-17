@@ -43,7 +43,7 @@ The generated bootstrap requires the automation to read the current installed `r
 5. Stop incomplete setup with `OOF_RUN_BLOCKED setup=incomplete` and never perform onboarding from a schedule.
 6. Run Outlook discovery through Scout's supported Playwright tools, skipping Work Hours during scheduled execution.
 7. Perform the daily operation in the confirmed mode.
-8. End with `OOF_RUN_OK status=<away|workday|test> update=<none|version> outlook=<read|written|blocked>`.
+8. End with the human-readable result required by the live recurring contract. Do not expose raw success tokens, JSON, or internal message-variant names.
 
 A failed update check is silent and non-blocking. Never claim a release exists based only on the update endpoint result during development or publishing. Confirm publication with `gh release view` before reporting it.
 
