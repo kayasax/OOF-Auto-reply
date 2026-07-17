@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.14] - 2026-07-17
+
+### Fixed
+
+- Made stable bootstrap rendering and its self-test platform independent so the archive gate passes on Linux release runners and Windows Scout hosts.
+
 ## [0.2.13] - 2026-07-17
 
 ### Fixed
@@ -151,7 +157,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...HEAD
+[0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.10...v0.2.11
