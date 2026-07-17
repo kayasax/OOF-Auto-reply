@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-07-17
+
+### Fixed
+
+- Required visible Scout browser execution for recurring Outlook access so account selection, sign-in, and MFA can be completed.
+- Added interactive migration detection for existing automations persisted with `browserHeadless: true`.
+- Added contract checks that reject headless Outlook scheduling.
+
 ## [0.2.9] - 2026-07-17
 
 ### Fixed
@@ -121,7 +129,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.9...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.10...HEAD
+[0.2.10]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.9...v0.2.10
 [0.2.9]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...v0.2.7

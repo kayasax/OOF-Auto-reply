@@ -61,6 +61,8 @@ function main() {
   requireText(automation, "exactly one step", "unexpected automation step gate");
   requireText(automation, '`triggerType: "schedule"`', "schedule trigger restoration");
   requireText(automation, '`oneShot: false`', "recurring execution restoration");
+  requireText(automation, '`browserHeadless: false`', "visible scheduled browser");
+  requireText(automation, "## Browser-mode migration", "existing headless automation migration");
   requireText(automation, "first call `m_update_automation` with only its ID and `enabled: false`", "safe transition disable");
   requireText(automation, "deterministic schedule", "deterministic schedule rendering");
   requireText(automation, "Require `success: true`", "automation mutation result gate");
@@ -89,7 +91,7 @@ function main() {
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
   requireText(discovery, "playwright-browser_snapshot", "Scout browser snapshots");
   requireText(discovery, "playwright-browser_click", "Scout browser clicks");
-  requireText(discovery, "scheduled headless run", "scheduled authentication gate");
+  requireText(discovery, "All recurring OOF automations must run with `browserHeadless: false`", "visible recurring authentication");
   requireText(discovery, "skip Work hours", "scheduled Work Hours skip");
   requireText(discovery, "Never use `playwright-browser_run_code`", "run-code prohibition");
 
@@ -106,6 +108,9 @@ function main() {
     if (activeRuntimeFiles.some((text) => text.includes(forbidden))) {
       throw new Error(`redistributable runtime contract contains local coupling: ${forbidden}`);
     }
+  }
+  if (activeRuntimeFiles.some((text) => text.includes("browserHeadless: true"))) {
+    throw new Error("OOF runtime contract must never schedule Outlook headlessly");
   }
   requireText(skill, "Do not install or launch a separate browser", "Scout browser lifecycle contract");
   requireText(workflow, "references scripts", "release references bundle");

@@ -36,7 +36,7 @@ The skill reuses the automation recorded in its private configuration. If that i
 
 ## 🔐 A sign-in prompt appeared
 
-That is normal from time to time. Routine checks run quietly in the background, but Outlook browser sessions can expire after security changes or long periods without use. The skill will stop safely and ask you to run it interactively. Complete the sign-in or MFA prompt in the displayed browser window, then let the skill continue.
+That is normal from time to time. The recurring automation uses a visible Scout-managed browser because Outlook can require account selection, sign-in, or MFA again after security changes or session expiry. Complete the displayed prompt directly. If authentication is not completed, the skill stops safely without changing Outlook.
 
 ## 🔄 The setting did not stay changed
 

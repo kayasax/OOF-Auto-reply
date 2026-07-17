@@ -6,7 +6,7 @@ Treat browser discovery as one bounded read-only operation.
 
 1. Use Scout's `playwright-browser_navigate`, `playwright-browser_snapshot`, `playwright-browser_click`, `playwright-browser_type`, and `playwright-browser_press_key` tools. Do not launch a browser process, inspect process command lines, attach through CDP, select a local profile, or load Playwright from Scout installation files.
 2. Navigate once to `https://outlook.cloud.microsoft/mail/` and reuse that Scout-managed page. Do not repeatedly navigate to settings deep links.
-3. If Scout shows Microsoft sign-in or MFA during an interactive run, wait for the user to complete it in the visible Scout-managed browser. During a scheduled headless run, stop with `OOF_RUN_BLOCKED outlook=authentication-required`.
+3. All recurring OOF automations must run with `browserHeadless: false`. If Scout shows Microsoft account selection, sign-in, or MFA, keep the visible Scout-managed browser open and wait for the user to complete it. If the user does not complete authentication, stop with `OOF_RUN_BLOCKED outlook=authentication-required`.
 4. Open Settings from the current Outlook page. Use snapshots and accessible names to select Calendar, Work hours and location, Account, Automatic replies, and Signatures. The labels may be localized.
 5. On interactive onboarding, read time zone, selected working days, and start and end times from Work hours and location. On scheduled runs, skip Work hours and use only the confirmed configuration.
 6. Read the Automatic Replies switch, scheduled-period controls, internal body, external-send toggle, external body, and the configured default signature. Do not click Save or change any value during discovery.

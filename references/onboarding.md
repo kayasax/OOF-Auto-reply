@@ -64,7 +64,7 @@ Until the user explicitly confirms this summary:
 3. For one safe candidate, disable it before changing configuration. For no candidate, no automation mutation occurs before the configuration write.
 4. Write the complete confirmed `config.json` with `update_check: { "enabled": true, "last_notified_version": null }`. Set `setup.mode` and `setup.scheduled_run_time` to the confirmed values, but keep `setup.status: "pending_automation"` so no scheduled prompt can write Outlook during the transition. Preserve a safe candidate's `setup.host_schedule_id` until reconciliation finishes.
 5. Reconcile the automation exactly as defined in [automation.md](automation.md). Update one owned existing automation in place and create a new one only when none exists. A failed update remains disabled and never reports successful setup.
-6. In production mode, reconcile the recurring schedule as enabled. Use headless browser execution only after successful visible sign-in.
+6. In production mode, reconcile the recurring schedule as enabled with `browserHeadless: false`. Outlook may require interactive account selection, sign-in, or MFA on any run.
 7. In test mode, reconcile a disabled dry-run schedule. It must remain read-only even when manually run.
 8. Immediately after successful creation or update, store the returned host schedule identifier while setup remains pending. After successful automation verification, set `setup.status: "complete"`. If reconciliation fails, leave setup incomplete with the identifier retained for recovery and the automation disabled.
 9. Explain that the host must remain running and that Outlook may occasionally require visible sign-in or MFA.
