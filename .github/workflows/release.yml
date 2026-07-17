@@ -28,6 +28,17 @@ jobs:
           test ! -e release/OOF-auto-reply/.git
           (cd release && zip -r ../OOF-auto-reply-skill.zip OOF-auto-reply)
 
+      - name: Verify built archive
+        shell: bash
+        run: |
+          mkdir audit
+          unzip -q OOF-auto-reply-skill.zip -d audit
+          test "$(cat audit/OOF-auto-reply/VERSION)" = "${GITHUB_REF_NAME#v}"
+          node audit/OOF-auto-reply/scripts/compute-period.cjs --self-test
+          node audit/OOF-auto-reply/scripts/config-status.cjs --self-test
+          node audit/OOF-auto-reply/scripts/render-automation.cjs --self-test
+          node audit/OOF-auto-reply/scripts/validate-contracts.cjs
+
       - name: Verify archive privacy
         shell: bash
         run: |

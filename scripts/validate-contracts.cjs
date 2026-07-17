@@ -19,7 +19,8 @@ function main() {
   const dailyOperation = read(path.join("references", "daily-operation.md"));
   const periodComputation = read(path.join("scripts", "compute-period.cjs"));
   const discovery = read(path.join("references", "outlook-discovery.md"));
-  const workflow = read(path.join(".github", "workflows", "release.yml"));
+  const workflowPath = path.join(root, ".github", "workflows", "release.yml");
+  const workflow = fs.existsSync(workflowPath) ? fs.readFileSync(workflowPath, "utf8") : null;
   const changelog = read("CHANGELOG.md");
   const version = read("VERSION").trim();
   const lines = skill.split(/\r?\n/).length;
@@ -125,9 +126,13 @@ function main() {
     throw new Error("OOF runtime contract must never schedule Outlook headlessly");
   }
   requireText(skill, "Do not install or launch a separate browser", "Scout browser lifecycle contract");
-  requireText(workflow, "references scripts", "release references bundle");
-  requireText(workflow, "CHANGELOG.md", "release changelog bundle");
-  requireText(workflow, 'grep -Fq "## [$(cat VERSION)] - " CHANGELOG.md', "release changelog gate");
+  if (workflow !== null) {
+    requireText(workflow, "references scripts", "release references bundle");
+    requireText(workflow, "CHANGELOG.md", "release changelog bundle");
+    requireText(workflow, 'grep -Fq "## [$(cat VERSION)] - " CHANGELOG.md', "release changelog gate");
+    requireText(workflow, "Verify built archive", "pre-publish archive validation");
+    requireText(workflow, "audit/OOF-auto-reply/scripts/validate-contracts.cjs", "archive contract execution");
+  }
   requireText(changelog, "## [Unreleased]", "unreleased changelog section");
   requireText(changelog, `## [${version}] - `, "current-version changelog entry");
 
