@@ -95,6 +95,14 @@ function main() {
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
   requireText(discovery, "playwright-browser_snapshot", "Scout browser snapshots");
   requireText(discovery, "playwright-browser_click", "Scout browser clicks");
+  requireText(discovery, "## Scheduled fast path", "deterministic Outlook fast path");
+  requireText(discovery, "options/accounts-category/automaticReply", "direct Automatic Replies route");
+  requireText(discovery, "limited to one navigation", "bounded browser calls");
+  requireText(discovery, "Do not narrate progress", "silent scheduled operation");
+  requireText(discovery, "Do not rediscover the page", "single-pass Outlook write");
+  requireText(discovery, "press `Control+A`", "single rich-text replacement");
+  requireText(recurringRun, "before opening Outlook", "calendar-first execution order");
+  requireText(recurringRun, "Do not narrate progress or explore Outlook", "non-exploratory recurring run");
   requireText(discovery, "All recurring OOF automations must run with `browserHeadless: false`", "visible recurring authentication");
   requireText(discovery, "skip Work hours", "scheduled Work Hours skip");
   requireText(discovery, "Never use `playwright-browser_run_code`", "run-code prohibition");

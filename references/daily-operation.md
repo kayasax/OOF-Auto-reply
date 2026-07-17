@@ -5,15 +5,17 @@ Use this reference only with a configuration that `scripts/config-status.cjs` re
 ## Inputs and classification
 
 1. Treat the host-provided date and time as authoritative.
-2. Read `references/outlook-discovery.md` and use Scout's supported Playwright tools for scheduled Outlook discovery. Skip Work Hours and use confirmed time zone, working days, and hours from `config.json`.
+2. Use confirmed time zone, working days, and hours from `config.json`. Scheduled runs never open Work Hours.
 3. Fetch public holidays for the current and next year from Nager.Date when not cached. Persist only holiday dates.
-4. Call the host calendar-read capability for an explicit interval from today through at least 21 days ahead. Outlook Automatic Replies settings are not calendar evidence. If the calendar read fails, is unavailable, or does not cover the interval, stop with `OOF_RUN_BLOCKED calendar=unread`; never assume there is no upcoming leave.
+4. Call the host calendar-read capability for an explicit interval from today through at least 21 days ahead before opening Outlook. Outlook Automatic Replies settings are not calendar evidence. If the calendar read fails, is unavailable, or does not cover the interval, stop with `OOF_RUN_BLOCKED calendar=unread`; never assume there is no upcoming leave.
 5. Count an OOF day only when an eligible event has `showAs == "oof"` and is all-day or spans the configured working window. Eligible means the event is not cancelled and its response is not declined or tentative. Include events owned by the user (`organizer`), explicitly accepted events, and OOF events with no response or an unanswered response. Do not require the literal response value `accepted`. Ignore short timed OOF blocks.
 6. Set status to `away` for an OOF day or public holiday. Otherwise set status to `workday`.
 
 Before comparing with Outlook, record the covered calendar interval, the nearest eligible OOF block or `none`, the traversed non-working dates, and the computed expected start, end, return date, and message variant. A zero-event result is valid only when it came from the successful calendar read above.
 
 Run `scripts/compute-period.cjs` with today's local date, the confirmed work schedule, eligible OOF dates, and holiday dates. Treat its JSON output as authoritative for the expected period and message variant. Do not calculate these values mentally. For the regression case where Friday 2026-07-17 is followed by a weekend and eligible OOF dates from 2026-07-20 through 2026-07-31, the required output ends at 2026-08-03 workday start.
+
+Only after this calculation, execute the Scheduled fast path in `references/outlook-discovery.md`. This produces one Outlook read and, when needed, one bounded write and verification pass.
 
 ## Computation
 

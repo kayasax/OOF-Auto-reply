@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.12] - 2026-07-17
+
+### Fixed
+
+- Replaced exploratory Outlook settings navigation with a direct Automatic Replies route and bounded fast path.
+- Moved calendar and deterministic period calculation before browser access so Outlook is read and written once.
+- Prohibited scheduled progress narration, repeated snapshots, unrelated settings exploration, and sentence-by-sentence editor changes.
+
 ## [0.2.11] - 2026-07-17
 
 ### Fixed
@@ -136,7 +144,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.11...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...HEAD
+[0.2.12]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.10...v0.2.11
 [0.2.10]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.9...v0.2.10
 [0.2.9]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.8...v0.2.9
