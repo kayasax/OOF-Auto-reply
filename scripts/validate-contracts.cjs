@@ -88,6 +88,9 @@ function main() {
   requireText(recurringRun, "outlook=authentication-required next=visible", "visible authentication migration result");
   requireText(recurringRun, "browserHeadless: true", "headless mode restoration");
   requireText(recurringRun, "Do not attempt credentials headlessly", "headless credential prohibition");
+  requireText(recurringRun, "authentication-recovery run only", "visible recovery-only run");
+  requireText(recurringRun, "outlook=authentication-complete next=headless", "headless restoration result");
+  requireText(recurringRun, "Do not read calendar, compare bodies, write Outlook", "visible work prohibition");
   requireText(dailyOperation, "next available working day", "available-workday return calculation");
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");

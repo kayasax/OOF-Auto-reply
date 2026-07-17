@@ -30,7 +30,7 @@ Never use name alone to update an automation whose description is neither the ma
 
 ## Browser-mode authentication recovery
 
-Headless is the steady state. A headless run that detects Microsoft account selection, sign-in, or MFA changes only its own `browserHeadless` field to `false` through `m_update_automation`, then stops before entering credentials. The next run starts visibly for direct user authentication. After that visible run completes Outlook work and verification, it changes only its own `browserHeadless` field back to `true`. An incomplete authentication attempt remains visible for the next retry. Never edit Scout's private automation files.
+Headless is the steady state. A headless run that detects Microsoft account selection, sign-in, or MFA changes only its own `browserHeadless` field to `false` through `m_update_automation`, then stops before entering credentials. The next run starts visibly for direct user authentication only. As soon as that run can see the Automatic Replies controls, it changes only its own `browserHeadless` field back to `true` and stops before calendar reads, comparisons, or Outlook writes. The following run performs normal work headlessly. An incomplete authentication attempt remains visible for the next retry. Never edit Scout's private automation files.
 
 ## Required run contract
 
