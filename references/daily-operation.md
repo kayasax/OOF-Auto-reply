@@ -25,7 +25,9 @@ For `workday`, schedule replies from today's workday end until the next availabl
 
 This extension is required on the last working day before leave. For example, if Friday is a workday, the weekend follows, and accepted leave runs from Monday through the following Friday, Friday's reply period ends on the later return day at workday start, not on the first Monday. Use that same return date when rendering `{return_date}` in the confirmed upcoming-leave notice. Without an accepted OOF day or public holiday after the weekend, retain the normal next-workday end time.
 
-When the nearest accepted future OOF begins within the confirmed lead window, apply the confirmed banner to the default signature and optionally append the same notice to non-working-hours replies. The notice return date and the Automatic Replies end date must identify the same next available working day. Remove stale, cancelled, or already-started banners.
+If the computed reply period flows directly into an eligible OOF block, render `messages.away_internal` and `messages.away_external` for the entire period, including the preceding after-hours portion. Replace the normal non-working-hours bodies completely. Never append a leave banner to a non-working-hours body for this case, and never retain wording about normal working hours in the away bodies. Render `{reply_start}` from `expectedStart` and `{reply_end}` from `expectedEnd` in the configured time zone using clear, human-readable date and time text.
+
+When the nearest accepted future OOF begins within the confirmed lead window, apply the confirmed banner to the default signature. The optional non-working-hours notice applies only when the selected message variant remains `non_working_hours`; it never modifies an `away` body. The notice return date and the Automatic Replies end date must identify the same next available working day. Remove stale, cancelled, or already-started banners.
 
 ## Test mode
 

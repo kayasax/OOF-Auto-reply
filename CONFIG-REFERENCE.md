@@ -38,7 +38,7 @@
 | `pre_oof_banner.enabled` | Shows a short leave notice in the default Outlook signature before confirmed leave. Disabled by default. |
 | `pre_oof_banner.lead_time_days` | Number of calendar days before leave that the banner begins. |
 | `pre_oof_banner.wording` | Approved banner text or HTML. |
-| `non_working_hours_upcoming_oof_notice.enabled` | Appends the same leave notice to non-working-hours replies while the banner is applicable. |
+| `non_working_hours_upcoming_oof_notice.enabled` | Appends the same leave notice only when the selected reply remains a normal non-working-hours reply. It never modifies an away reply. |
 
 ## Message fields
 
@@ -68,6 +68,8 @@ The message and banner wording fields support these variables:
 | `{return_date}` | First working day after the away block, excluding weekends and holidays. |
 | `{start_day}` | First day of the current or upcoming away block. |
 | `{end_day}` | Last day of that away block. |
+| `{reply_start}` | Human-readable start date and time of the scheduled Automatic Replies period. |
+| `{reply_end}` | Human-readable end date and time of the scheduled Automatic Replies period. |
 | `{backup_contact_email}` | The configured backup contact. |
 | `{signature_tag}` | The configured signature tag. |
 | `{WORKDAYS}` | Friendly display of configured working days. |

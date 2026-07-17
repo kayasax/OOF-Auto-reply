@@ -65,12 +65,7 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
     returnDate: cursor,
     traversedNonWorkingDates,
     includesUpcomingOof,
-    messageVariant:
-      status === "away"
-        ? "away"
-        : includesUpcomingOof
-          ? "non_working_hours_upcoming_oof"
-          : "non_working_hours",
+    messageVariant: status === "away" || includesUpcomingOof ? "away" : "non_working_hours",
   };
 }
 
@@ -105,11 +100,12 @@ function selfTest() {
     nextWeekLeave.expectedEnd !== "2026-08-03T09:00" ||
     nextWeekLeave.returnDate !== "2026-08-03" ||
     !nextWeekLeave.includesUpcomingOof ||
-    nextWeekLeave.messageVariant !== "non_working_hours_upcoming_oof" ||
+    nextWeekLeave.messageVariant !== "away" ||
     normalWeekend.expectedEnd !== "2026-07-20T09:00" ||
     normalWeekend.includesUpcomingOof ||
     awayDay.status !== "away" ||
-    awayDay.expectedStart !== "2026-07-20T00:00"
+    awayDay.expectedStart !== "2026-07-20T00:00" ||
+    awayDay.messageVariant !== "away"
   ) {
     throw new Error("period computation self-test failed");
   }

@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.15] - 2026-07-17
+
+### Fixed
+
+- Replaced normal after-hours bodies with dedicated away bodies when the reply period flows directly into confirmed leave.
+- Prevented pre-OOF notices from being appended to away replies.
+- Added dynamic reply-period variables and a regression for the July 17 through August 3 leave period.
+
 ## [0.2.14] - 2026-07-17
 
 ### Fixed
@@ -157,7 +165,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.15...HEAD
+[0.2.15]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...v0.2.15
 [0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.11...v0.2.12

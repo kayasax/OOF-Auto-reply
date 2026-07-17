@@ -91,8 +91,14 @@ function main() {
   requireText(dailyOperation, "does not cover the interval", "calendar coverage gate");
   requireText(dailyOperation, "calendar-derived expected switch", "calendar-derived comparison");
   requireText(dailyOperation, "scripts/compute-period.cjs", "deterministic period calculation");
+  requireText(dailyOperation, "render `messages.away_internal` and `messages.away_external`", "contiguous leave away bodies");
+  requireText(dailyOperation, "Replace the normal non-working-hours bodies completely", "away body replacement");
+  requireText(dailyOperation, "never modifies an `away` body", "away banner prohibition");
+  requireText(dailyOperation, "`{reply_start}`", "dynamic reply start rendering");
+  requireText(dailyOperation, "`{reply_end}`", "dynamic reply end rendering");
   requireText(periodComputation, 'today: "2026-07-17"', "pre-leave regression date");
   requireText(periodComputation, 'nextWeekLeave.expectedEnd !== "2026-08-03T09:00"', "August 3 return regression");
+  requireText(periodComputation, 'nextWeekLeave.messageVariant !== "away"', "pre-leave away-template regression");
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
   requireText(discovery, "playwright-browser_snapshot", "Scout browser snapshots");
   requireText(discovery, "playwright-browser_click", "Scout browser clicks");
