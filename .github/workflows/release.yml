@@ -37,6 +37,7 @@ jobs:
           node audit/OOF-auto-reply/scripts/compute-period.cjs --self-test
           node audit/OOF-auto-reply/scripts/config-status.cjs --self-test
           node audit/OOF-auto-reply/scripts/render-automation.cjs --self-test
+          node audit/OOF-auto-reply/scripts/render-messages.cjs --self-test
           node audit/OOF-auto-reply/scripts/validate-contracts.cjs
 
       - name: Verify archive privacy

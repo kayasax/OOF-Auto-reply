@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.16] - 2026-07-17
+
+### Fixed
+
+- Added deterministic message rendering from the current private configuration and computed period.
+- Rejected false away-body matches based on template labels, partial phrases, working-hours text, or pre-OOF banners.
+- Required complete editor text comparison after every Outlook write.
+
 ## [0.2.15] - 2026-07-17
 
 ### Fixed
@@ -165,7 +173,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.15...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.16...HEAD
+[0.2.16]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.15...v0.2.16
 [0.2.15]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...v0.2.15
 [0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...v0.2.13

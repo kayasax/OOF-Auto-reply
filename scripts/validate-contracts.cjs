@@ -18,6 +18,7 @@ function main() {
   const recurringRun = read(path.join("references", "recurring-run.md"));
   const dailyOperation = read(path.join("references", "daily-operation.md"));
   const periodComputation = read(path.join("scripts", "compute-period.cjs"));
+  const messageRendering = read(path.join("scripts", "render-messages.cjs"));
   const discovery = read(path.join("references", "outlook-discovery.md"));
   const workflowPath = path.join(root, ".github", "workflows", "release.yml");
   const workflow = fs.existsSync(workflowPath) ? fs.readFileSync(workflowPath, "utf8") : null;
@@ -77,6 +78,10 @@ function main() {
   requireText(recurringRun, "OOF_RUN_BLOCKED outlook=unread", "Outlook read failure gate");
   requireText(recurringRun, "OOF_RUN_BLOCKED calendar=unread", "calendar read failure gate");
   requireText(recurringRun, "compute-period.cjs", "live deterministic calculator contract");
+  requireText(recurringRun, "render-messages.cjs", "deterministic message renderer contract");
+  requireText(recurringRun, "Do not render, select, append, or infer message text yourself", "agent message-rendering prohibition");
+  requireText(recurringRun, "literal body equality", "literal body verification");
+  requireText(recurringRun, "any visible `working hours`", "away false-match rejection");
   requireText(recurringRun, "organizer-owned", "live organizer event contract");
   requireText(recurringRun, "m_get_automation", "scheduled browser-mode inspection");
   requireText(recurringRun, "m_update_automation", "scheduled visible-browser migration");
@@ -99,6 +104,8 @@ function main() {
   requireText(periodComputation, 'today: "2026-07-17"', "pre-leave regression date");
   requireText(periodComputation, 'nextWeekLeave.expectedEnd !== "2026-08-03T09:00"', "August 3 return regression");
   requireText(periodComputation, 'nextWeekLeave.messageVariant !== "away"', "pre-leave away-template regression");
+  requireText(messageRendering, "away body contains non-working-hours or pre-OOF banner wording", "away wording rejection");
+  requireText(messageRendering, 'internalKey !== "away_internal"', "away template selection regression");
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
   requireText(discovery, "playwright-browser_snapshot", "Scout browser snapshots");
   requireText(discovery, "playwright-browser_click", "Scout browser clicks");
@@ -108,6 +115,8 @@ function main() {
   requireText(discovery, "Do not narrate progress", "silent scheduled operation");
   requireText(discovery, "Do not rediscover the page", "single-pass Outlook write");
   requireText(discovery, "press `Control+A`", "single rich-text replacement");
+  requireText(discovery, "complete visible text of both editors", "complete body capture");
+  requireText(discovery, "A template label or partial phrase is not verification", "false body match prohibition");
   requireText(recurringRun, "before opening Outlook", "calendar-first execution order");
   requireText(recurringRun, "Do not narrate progress or explore Outlook", "non-exploratory recurring run");
   requireText(discovery, "All recurring OOF automations must run with `browserHeadless: false`", "visible recurring authentication");
@@ -158,6 +167,7 @@ function main() {
     path.join("scripts", "compute-period.cjs"),
     path.join("scripts", "config-status.cjs"),
     path.join("scripts", "render-automation.cjs"),
+    path.join("scripts", "render-messages.cjs"),
   ];
   const privatePatterns = [
     /C:\\Users\\[^\\\s]+/i,

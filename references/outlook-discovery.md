@@ -10,7 +10,7 @@ Treat scheduled Outlook access as one deterministic operation after calendar cal
 2. Take one `playwright-browser_snapshot` after the page settles.
 3. If Microsoft account selection, sign-in, or MFA is visible, wait for direct user interaction. After authentication, navigate to the same direct URL once and take one new snapshot. If authentication is not completed, stop with `OOF_RUN_BLOCKED outlook=authentication-required`.
 4. If the Automatic Replies controls are already visible, do not click any category tab. Otherwise use `playwright-browser_click` on Account or Compte once, use it on Automatic replies or Réponses automatiques once, then take one new snapshot. Do not inspect Mail, Calendar, layout, reading-pane, or unrelated tabs.
-5. Read the enabled switch, scheduled-period controls, internal body, external-send toggle, and external body from that snapshot.
+5. Read the enabled switch, scheduled-period controls, internal body, external-send toggle, and external body from that snapshot. Capture the complete visible text of both editors. Do not summarize either body as a template name or banner state.
 6. Normal scheduled discovery is limited to one navigation, at most two tab clicks, and at most two snapshots. Authentication adds only the one post-authentication navigation and snapshot. If required controls remain unavailable, stop with `OOF_RUN_BLOCKED outlook=unread`.
 
 ## Scheduled write and verification
@@ -20,7 +20,7 @@ Use the refs from the final fast-path snapshot. Do not rediscover the page.
 1. Change only values that differ from the calculator output and rendered bodies.
 2. For each rich-text body that differs: click its editor, press `Control+A` with `playwright-browser_press_key`, then enter the complete body once with `playwright-browser_type`. Never append or edit sentence by sentence.
 3. Set the switch, scheduled period, start, end, external-send toggle, and bodies as required, then click Save or Enregistrer once.
-4. Navigate once to the same direct Automatic Replies URL and take one snapshot. Verify the exact switch, period, and bodies. Do not retry a failed save more than once.
+4. Navigate once to the same direct Automatic Replies URL and take one snapshot. Verify the exact switch and period, then compare the complete visible text of each editor with the plain-text content of the deterministic renderer output. A template label or partial phrase is not verification. If an `away` body contains `working hours`, `outside business hours`, `Heads up`, or calendar-banner wording, verification fails. Do not retry a failed save more than once.
 5. Only when the confirmed pre-OOF banner is enabled and its expected body differs, navigate directly to `https://outlook.cloud.microsoft/mail/options/accounts-category/signatures-subcategory`, update only the configured default signature, save once, and verify once.
 
 ## Interactive onboarding only
