@@ -87,10 +87,14 @@ function main() {
   requireText(recurringRun, "m_get_automation", "scheduled browser-mode inspection");
   requireText(recurringRun, "outlook=authentication-required next=visible", "visible authentication migration result");
   requireText(recurringRun, "browserHeadless: true", "headless mode restoration");
-  requireText(recurringRun, "Do not attempt credentials headlessly", "headless credential prohibition");
+  requireText(recurringRun, "Do not attempt credentials", "credential handling prohibition");
   requireText(recurringRun, "authentication-recovery run only", "visible recovery-only run");
-  requireText(recurringRun, "outlook=authentication-complete next=headless", "headless restoration result");
-  requireText(recurringRun, "Do not read calendar, compare bodies, write Outlook", "visible work prohibition");
+  requireText(recurringRun, "setup.auth_recovery_pending", "explicit authentication recovery state");
+  requireText(recurringRun, "Never infer browser mode", "browser-mode inference prohibition");
+  requireText(recurringRun, "inspect another tab", "authentication tab exploration prohibition");
+  requireText(recurringRun, "stop immediately", "scheduled authentication wait prohibition");
+  requireText(recurringRun, "persist `setup.auth_recovery_pending: false`", "authentication state clearing");
+  requireText(onboarding, "Initialize `setup.auth_recovery_pending` to `false`", "authentication state initialization");
   requireText(recurringRun, "End with a short human-readable summary", "human-readable run ending");
   requireText(recurringRun, "never a raw contract token", "raw success token prohibition");
   requireText(recurringRun, "Omit implementation details", "implementation detail suppression");

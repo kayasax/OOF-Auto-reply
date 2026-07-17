@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.22] - 2026-07-17
+
+### Fixed
+
+- Added explicit private authentication-recovery state instead of guessing browser mode from omitted automation fields or window visibility.
+- Stopped scheduled authentication recovery immediately with user guidance and prohibited inspecting unrelated browser tabs.
+- Kept the optional state backward-compatible with schema version 1.
+
 ## [0.2.21] - 2026-07-17
 
 ### Fixed
@@ -210,7 +218,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.21...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.22...HEAD
+[0.2.22]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.21...v0.2.22
 [0.2.21]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.20...v0.2.21
 [0.2.20]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.19...v0.2.20
 [0.2.19]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.18...v0.2.19

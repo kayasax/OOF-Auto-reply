@@ -11,6 +11,7 @@
 | `setup.mode` | `production` writes Outlook settings during scheduled runs. `test` performs read-only dry runs only. |
 | `setup.scheduled_run_time` | The confirmed local time for the recurring run. |
 | `setup.host_schedule_id` | The current host's private schedule identifier. Do not copy it to another host. |
+| `setup.auth_recovery_pending` | Optional runtime state. `true` means the next run is visible authentication recovery only. Missing is equivalent to `false`; schema version 1 remains compatible. |
 
 ## Update-check fields
 
