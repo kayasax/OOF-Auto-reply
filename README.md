@@ -23,7 +23,7 @@ The first screen explains that Outlook will open in a browser and may require in
 | When | Outlook does |
 | --- | --- |
 | 🌴 You're on leave or a public holiday | Shows your away reply and the correct return date. |
-| 🌙 Your workday ends | Sets your non-working-hours reply until you are next at work. |
+| 🌙 Your workday ends | Sets your non-working-hours reply until you are next available for work, including through upcoming leave. |
 | 📅 Leave is coming up | Optionally adds a small heads-up to your signature. |
 | 🔎 The schedule runs | Checks Outlook afterward, so it can catch a competing old flow. |
 

@@ -15,6 +15,7 @@ function main() {
   const skill = read("SKILL.md");
   const onboarding = read(path.join("references", "onboarding.md"));
   const automation = read(path.join("references", "automation.md"));
+  const dailyOperation = read(path.join("references", "daily-operation.md"));
   const discovery = read(path.join("scripts", "outlook-discovery.cjs"));
   const workflow = read(path.join(".github", "workflows", "release.yml"));
   const changelog = read("CHANGELOG.md");
@@ -66,6 +67,10 @@ function main() {
   requireText(automation, '`setup.status: "pending_automation"`', "incomplete transition state");
   requireText(automation, 'set `setup.status: "complete"`', "post-verification completion gate");
   requireText(automation, "Never delete an automation automatically", "automation deletion prohibition");
+  requireText(dailyOperation, "next available working day", "available-workday return calculation");
+  requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
+  requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");
+  requireText(dailyOperation, "notice return date and the Automatic Replies end date", "return-date consistency");
   requireText(discovery, 'button[role="tab"][value="workSchedule"]', "Work Hours selector");
   requireText(discovery, 'button[role="tab"][value="calendar"]', "Calendar category selector");
   requireText(discovery, 'button[role="tab"][value="accounts-category"]', "Account category selector");

@@ -6,9 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-07-17
+
 ### Added
 
 - Added this maintained changelog and release checks that require an entry for the version being packaged.
+
+### Fixed
+
+- Extended the last-workday Automatic Replies period through adjacent upcoming leave, weekends, and public holidays until the actual return-day work start.
+- Required the Outlook end date and the return date shown in the upcoming-leave notice to agree.
 
 ## [0.2.5] - 2026-07-16
 
@@ -86,7 +93,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.2...v0.2.3
