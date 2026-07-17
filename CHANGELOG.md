@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.17] - 2026-07-17
+
+### Fixed
+
+- Normalized whitespace when verifying Outlook editor accessibility text.
+- Treated merged paragraphs and omitted accessibility line breaks as formatting differences rather than missing content.
+- Prevented unnecessary rewrites when every expected sentence is already present in order.
+
 ## [0.2.16] - 2026-07-17
 
 ### Fixed
@@ -173,7 +181,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.16...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.17...HEAD
+[0.2.17]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.16...v0.2.17
 [0.2.16]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.15...v0.2.16
 [0.2.15]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...v0.2.15
 [0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14

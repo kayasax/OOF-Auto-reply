@@ -34,6 +34,22 @@ function renderTemplate(template, variables) {
   return rendered;
 }
 
+function htmlToCanonicalText(html) {
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<\/p\s*>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,!?;:])/g, "$1")
+    .trim();
+}
+
 function renderMessages(config, period) {
   const variant = period.messageVariant;
   if (!['away', 'non_working_hours'].includes(variant)) throw new Error(`unsupported message variant: ${variant}`);
@@ -56,7 +72,15 @@ function renderMessages(config, period) {
     }
   }
 
-  return { variant, internalKey, externalKey, internal, external };
+  return {
+    variant,
+    internalKey,
+    externalKey,
+    internal,
+    external,
+    internalCanonicalText: htmlToCanonicalText(internal),
+    externalCanonicalText: htmlToCanonicalText(external),
+  };
 }
 
 function selfTest() {
@@ -78,7 +102,9 @@ function selfTest() {
   if (
     result.internalKey !== "away_internal" ||
     !result.internal.includes("Friday, July 17, 2026 at 18:00") ||
-    !result.external.includes("Monday, August 3, 2026 at 09:00")
+    !result.external.includes("Monday, August 3, 2026 at 09:00") ||
+    result.internalCanonicalText !==
+      "Away from Friday, July 17, 2026 at 18:00 until Monday, August 3, 2026 at 09:00."
   ) {
     throw new Error("away message rendering self-test failed");
   }
@@ -96,4 +122,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { renderMessages };
+module.exports = { htmlToCanonicalText, renderMessages };

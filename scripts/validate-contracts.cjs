@@ -80,7 +80,8 @@ function main() {
   requireText(recurringRun, "compute-period.cjs", "live deterministic calculator contract");
   requireText(recurringRun, "render-messages.cjs", "deterministic message renderer contract");
   requireText(recurringRun, "Do not render, select, append, or infer message text yourself", "agent message-rendering prohibition");
-  requireText(recurringRun, "literal body equality", "literal body verification");
+  requireText(recurringRun, "normalized full-body equality", "normalized body verification");
+  requireText(recurringRun, "Do not check paragraph boundaries", "paragraph-boundary prohibition");
   requireText(recurringRun, "any visible `working hours`", "away false-match rejection");
   requireText(recurringRun, "organizer-owned", "live organizer event contract");
   requireText(recurringRun, "m_get_automation", "scheduled browser-mode inspection");
@@ -106,6 +107,9 @@ function main() {
   requireText(periodComputation, 'nextWeekLeave.messageVariant !== "away"', "pre-leave away-template regression");
   requireText(messageRendering, "away body contains non-working-hours or pre-OOF banner wording", "away wording rejection");
   requireText(messageRendering, 'internalKey !== "away_internal"', "away template selection regression");
+  requireText(messageRendering, "internalCanonicalText", "canonical accessibility text");
+  requireText(messageRendering, ".replace(/\\s+/g, \" \")", "canonical whitespace normalization");
+  requireText(messageRendering, '.replace(/\\s+([.,!?;:])/g, "$1")', "canonical punctuation normalization");
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
   requireText(discovery, "playwright-browser_snapshot", "Scout browser snapshots");
   requireText(discovery, "playwright-browser_click", "Scout browser clicks");
@@ -116,7 +120,9 @@ function main() {
   requireText(discovery, "Do not rediscover the page", "single-pass Outlook write");
   requireText(discovery, "press `Control+A`", "single rich-text replacement");
   requireText(discovery, "complete visible text of both editors", "complete body capture");
-  requireText(discovery, "A template label or partial phrase is not verification", "false body match prohibition");
+  requireText(discovery, "collapse every whitespace run to one space", "accessibility whitespace normalization");
+  requireText(discovery, "Never require a paragraph", "paragraph accessibility tolerance");
+  requireText(discovery, "Do not rewrite or retry merely because paragraph boundaries differ", "paragraph retry prohibition");
   requireText(recurringRun, "before opening Outlook", "calendar-first execution order");
   requireText(recurringRun, "Do not narrate progress or explore Outlook", "non-exploratory recurring run");
   requireText(discovery, "All recurring OOF automations must run with `browserHeadless: false`", "visible recurring authentication");
