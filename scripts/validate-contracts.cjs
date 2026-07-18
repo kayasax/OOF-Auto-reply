@@ -76,7 +76,11 @@ function main() {
   requireText(automation, "stable bootstrap", "stable automation bootstrap");
   requireText(automation, "Replacing skill files does not execute the skill", "honest upgrade boundary");
   requireText(recurringRun, "OOF_RUN_BLOCKED outlook=unread", "Outlook read failure gate");
-  requireText(recurringRun, "OOF_RUN_BLOCKED calendar=unread", "calendar read failure gate");
+  requireText(recurringRun, "OOF_RUN_BLOCKED calendar=range-incomplete", "calendar range failure gate");
+  requireText(recurringRun, "calendarEndExclusive", "explicit recurring calendar end");
+  requireText(recurringRun, "exactly 22 calendar days later", "inclusive 21-day lookahead calculation");
+  requireText(recurringRun, "today-only request is forbidden", "today-only recurring read prohibition");
+  requireText(recurringRun, "following pagination until the full interval is returned", "recurring calendar pagination");
   requireText(recurringRun, "compute-period.cjs", "live deterministic calculator contract");
   requireText(recurringRun, "render-messages.cjs", "deterministic message renderer contract");
   requireText(recurringRun, "Do not calculate, correct, render, select, append, or infer dates or message text yourself", "agent date and message-rendering prohibition");
@@ -104,7 +108,11 @@ function main() {
   requireText(dailyOperation, "last working day before leave", "pre-leave workday extension");
   requireText(dailyOperation, "continue through the complete contiguous block", "upcoming leave traversal");
   requireText(dailyOperation, "notice return date and the Automatic Replies end date", "return-date consistency");
-  requireText(dailyOperation, "OOF_RUN_BLOCKED calendar=unread", "calendar-read failure gate");
+  requireText(dailyOperation, "OOF_RUN_BLOCKED calendar=range-incomplete", "calendar-range failure gate");
+  requireText(dailyOperation, "2026-08-09T00:00:00+02:00", "calendar range regression end");
+  requireText(dailyOperation, "this includes all of Saturday, 2026-08-08", "inclusive calendar range regression");
+  requireText(dailyOperation, "call with a missing start or end", "bounded calendar call requirement");
+  requireText(dailyOperation, "follow pagination until complete", "calendar pagination requirement");
   requireText(dailyOperation, "Include events owned by the user (`organizer`)", "organizer OOF eligibility");
   requireText(dailyOperation, "does not cover the interval", "calendar coverage gate");
   requireText(dailyOperation, "calendar-derived expected switch", "calendar-derived comparison");

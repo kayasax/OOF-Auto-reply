@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.25] - 2026-07-18
+
+### Fixed
+
+- Replaced the ambiguous calendar lookahead instruction with explicit local start and exclusive end bounds.
+- Rejected default, agenda, unbounded, and today-only calendar reads.
+- Required complete pagination and coverage through the full 21st day ahead before Outlook access.
+- Reused cached holiday years instead of fetching them again.
+
 ## [0.2.24] - 2026-07-18
 
 ### Fixed
