@@ -79,7 +79,7 @@ function main() {
   requireText(recurringRun, "OOF_RUN_BLOCKED calendar=unread", "calendar read failure gate");
   requireText(recurringRun, "compute-period.cjs", "live deterministic calculator contract");
   requireText(recurringRun, "render-messages.cjs", "deterministic message renderer contract");
-  requireText(recurringRun, "Do not render, select, append, or infer message text yourself", "agent message-rendering prohibition");
+  requireText(recurringRun, "Do not calculate, correct, render, select, append, or infer dates or message text yourself", "agent date and message-rendering prohibition");
   requireText(recurringRun, "normalized full-body equality", "normalized body verification");
   requireText(recurringRun, "Do not check paragraph boundaries", "paragraph-boundary prohibition");
   requireText(recurringRun, "any visible `working hours`", "away false-match rejection");
@@ -117,6 +117,8 @@ function main() {
   requireText(periodComputation, 'today: "2026-07-17"', "pre-leave regression date");
   requireText(periodComputation, 'nextWeekLeave.expectedEnd !== "2026-08-03T09:00"', "August 3 return regression");
   requireText(periodComputation, 'nextWeekLeave.messageVariant !== "away"', "pre-leave away-template regression");
+  requireText(periodComputation, 'saturdayDuringLeave.expectedStart !== "2026-07-17T18:00"', "weekend coverage-start regression");
+  requireText(periodComputation, 'midLeave.expectedStart !== "2026-07-17T18:00"', "active-leave coverage-start regression");
   requireText(messageRendering, "away body contains non-working-hours or pre-OOF banner wording", "away wording rejection");
   requireText(messageRendering, 'internalKey !== "away_internal"', "away template selection regression");
   requireText(messageRendering, "internalCanonicalText", "canonical accessibility text");
@@ -127,7 +129,13 @@ function main() {
   requireText(discovery, "playwright-browser_click", "Scout browser clicks");
   requireText(discovery, "## Scheduled fast path", "deterministic Outlook fast path");
   requireText(discovery, "options/accounts-category/automaticReply", "direct Automatic Replies route");
-  requireText(discovery, "limited to one navigation", "bounded browser calls");
+  requireText(discovery, "exactly one navigation", "bounded browser calls");
+  requireText(discovery, "Never call the tabs tool", "single-tab browser contract");
+  requireText(discovery, "Do not wait and snapshot again", "single-snapshot browser contract");
+  requireText(discovery, "Never infer that this page autosaves", "explicit Save requirement");
+  requireText(discovery, "Microsoft-logo-only", "ambiguous loading-page stop");
+  requireText(recurringRun, "must not advance an already-started coverage boundary", "stable coverage boundary");
+  requireText(recurringRun, "Never replace `expectedStart`", "mental date replacement prohibition");
   requireText(discovery, "Do not narrate progress", "silent scheduled operation");
   requireText(discovery, "Do not rediscover the page", "single-pass Outlook write");
   requireText(discovery, "press `Control+A`", "single rich-text replacement");

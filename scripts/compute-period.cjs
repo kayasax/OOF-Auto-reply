@@ -24,6 +24,10 @@ function addDays(value, count) {
   return date.toISOString().slice(0, 10);
 }
 
+function previousDay(value) {
+  return addDays(value, -1);
+}
+
 function parseList(value) {
   if (!value) return [];
   return String(value)
@@ -48,6 +52,17 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
   const isConfiguredWorkday = (date) => configuredDays.has(DAY_CODES[parseDate(date, "date").getUTCDay()]);
   const isUnavailable = (date) => !isConfiguredWorkday(date) || oof.has(date) || holidays.has(date);
   const status = oof.has(today) || holidays.has(today) ? "away" : "workday";
+  let coverageStartDate = today;
+
+  if (isUnavailable(today)) {
+    let previous = previousDay(today);
+    while (isUnavailable(previous)) {
+      previous = previousDay(previous);
+      if (addDays(previous, 371) === today) throw new Error("no prior available working day found within 370 days");
+    }
+    coverageStartDate = previous;
+  }
+
   const traversedNonWorkingDates = [];
   let cursor = addDays(today, 1);
 
@@ -60,7 +75,7 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
   const includesUpcomingOof = traversedNonWorkingDates.some((date) => oof.has(date));
   return {
     status,
-    expectedStart: `${today}T${status === "away" ? "00:00" : workEnd}`,
+    expectedStart: `${coverageStartDate}T${workEnd}`,
     expectedEnd: `${cursor}T${workStart}`,
     returnDate: cursor,
     traversedNonWorkingDates,
@@ -94,6 +109,38 @@ function selfTest() {
   });
   const normalWeekend = computePeriod({ ...common, today: "2026-07-17", oofDates: [] });
   const awayDay = computePeriod({ ...common, today: "2026-07-20", oofDates: ["2026-07-20"] });
+  const saturdayDuringLeave = computePeriod({
+    ...common,
+    today: "2026-07-18",
+    oofDates: [
+      "2026-07-20",
+      "2026-07-21",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-27",
+      "2026-07-28",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+    ],
+  });
+  const midLeave = computePeriod({
+    ...common,
+    today: "2026-07-22",
+    oofDates: [
+      "2026-07-20",
+      "2026-07-21",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-27",
+      "2026-07-28",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+    ],
+  });
 
   if (
     nextWeekLeave.expectedStart !== "2026-07-17T18:00" ||
@@ -104,8 +151,12 @@ function selfTest() {
     normalWeekend.expectedEnd !== "2026-07-20T09:00" ||
     normalWeekend.includesUpcomingOof ||
     awayDay.status !== "away" ||
-    awayDay.expectedStart !== "2026-07-20T00:00" ||
-    awayDay.messageVariant !== "away"
+    awayDay.expectedStart !== "2026-07-17T18:00" ||
+    awayDay.messageVariant !== "away" ||
+    saturdayDuringLeave.expectedStart !== "2026-07-17T18:00" ||
+    saturdayDuringLeave.expectedEnd !== "2026-08-03T09:00" ||
+    midLeave.expectedStart !== "2026-07-17T18:00" ||
+    midLeave.expectedEnd !== "2026-08-03T09:00"
   ) {
     throw new Error("period computation self-test failed");
   }
