@@ -285,7 +285,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.22...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.30...HEAD
+[0.2.30]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.29...v0.2.30
+[0.2.29]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.28...v0.2.29
+[0.2.28]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.27...v0.2.28
+[0.2.27]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.26...v0.2.27
+[0.2.26]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.25...v0.2.26
+[0.2.25]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.24...v0.2.25
+[0.2.24]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.23...v0.2.24
+[0.2.23]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.22...v0.2.23
 [0.2.22]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.21...v0.2.22
 [0.2.21]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.20...v0.2.21
 [0.2.20]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.19...v0.2.20
