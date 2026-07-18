@@ -76,6 +76,7 @@ function main() {
   requireText(automation, "stable bootstrap", "stable automation bootstrap");
   requireText(automation, "Replacing skill files does not execute the skill", "honest upgrade boundary");
   requireText(recurringRun, "OOF_RUN_BLOCKED outlook=unread", "Outlook read failure gate");
+  requireText(recurringRun, "existing Outlook dates and messages may remain stale", "blocked stale-state disclosure");
   requireText(recurringRun, "OOF_RUN_BLOCKED calendar=range-incomplete", "calendar range failure gate");
   requireText(recurringRun, "calendarEndExclusive", "explicit recurring calendar end");
   requireText(recurringRun, "exactly 22 calendar days later", "inclusive 21-day lookahead calculation");
@@ -142,13 +143,17 @@ function main() {
   requireText(discovery, "options/accounts-category/automaticReply", "direct Automatic Replies route");
   requireText(discovery, "exactly one navigation", "bounded browser calls");
   requireText(discovery, "Never call the tabs tool", "single-tab browser contract");
-  requireText(discovery, "Do not wait and snapshot again", "single-snapshot browser contract");
+  requireText(discovery, "wait up to 10 seconds", "bounded loading-page stabilization");
+  requireText(discovery, "Do not navigate again", "loading retry navigation prohibition");
+  requireText(discovery, "one replacement snapshot", "bounded loading snapshot retry");
   requireText(discovery, "Never infer that this page autosaves", "explicit Save requirement");
   requireText(discovery, "Microsoft-logo-only", "ambiguous loading-page stop");
   requireText(recurringRun, "must not advance an already-started coverage boundary", "stable coverage boundary");
   requireText(recurringRun, "Never replace `expectedStart`", "mental date replacement prohibition");
   requireText(discovery, "Do not narrate progress", "silent scheduled operation");
   requireText(discovery, "Do not rediscover the page", "single-pass Outlook write");
+  requireText(discovery, "bind the start date and time controls to `expectedStart`", "exact start control binding");
+  requireText(discovery, "both rendered messages must still use Friday, 2026-07-17 at 18:00", "prior-day message start regression");
   requireText(discovery, "press `Control+A`", "single rich-text replacement");
   requireText(discovery, "complete visible text of both editors", "complete body capture");
   requireText(discovery, "collapse every whitespace run to one space", "accessibility whitespace normalization");

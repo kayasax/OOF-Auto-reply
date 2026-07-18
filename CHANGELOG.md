@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.26] - 2026-07-18
+
+### Fixed
+
+- Allowed one bounded stabilization when Outlook initially renders only its Microsoft logo or loading shell.
+- Bound schedule controls and rendered messages explicitly to the calculator's start and end instead of today's date.
+- Clarified that a blocked run made no write and may leave stale Outlook values visible.
+
 ## [0.2.25] - 2026-07-18
 
 ### Fixed
