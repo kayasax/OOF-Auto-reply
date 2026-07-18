@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.27] - 2026-07-18
+
+### Fixed
+
+- Accepted Outlook pages that commit Automatic Replies with OK or Apply instead of Save.
+- Prevented complete classic Automatic Replies pages from being misclassified as unreadable.
+- Suppressed progress narration, reasoning transcripts, and unsolicited manual Teams alerts during scheduled runs.
+
 ## [0.2.26] - 2026-07-18
 
 ### Fixed
