@@ -122,6 +122,9 @@ function main() {
   requireText(messageRendering, "away body contains non-working-hours or pre-OOF banner wording", "away wording rejection");
   requireText(messageRendering, 'internalKey !== "away_internal"', "away template selection regression");
   requireText(messageRendering, "internalCanonicalText", "canonical accessibility text");
+  requireText(messageRendering, "internalPlainText", "paragraph-preserving internal text");
+  requireText(messageRendering, "externalPlainText", "paragraph-preserving external text");
+  requireText(messageRendering, '.replace(/<\\/p\\s*>/gi, "\\n\\n")', "paragraph break rendering");
   requireText(messageRendering, ".replace(/\\s+/g, \" \")", "canonical whitespace normalization");
   requireText(messageRendering, '.replace(/\\s+([.,!?;:])/g, "$1")', "canonical punctuation normalization");
   requireText(discovery, "playwright-browser_navigate", "Scout browser navigation");
@@ -144,6 +147,8 @@ function main() {
   requireText(discovery, "Never require a paragraph", "paragraph accessibility tolerance");
   requireText(discovery, "Do not rewrite or retry merely because paragraph boundaries differ", "paragraph retry prohibition");
   requireText(discovery, "Treat this automation path as plain text", "plain-text Outlook body contract");
+  requireText(discovery, "Preserve its newlines exactly", "Outlook paragraph preservation");
+  requireText(recurringRun, "Write only its `internalPlainText` and `externalPlainText`", "plain-text write fields");
   requireText(discovery, "Do not emit HTML tags", "HTML input prohibition");
   requireText(discovery, "Literal URLs are content and must appear exactly", "literal URL verification");
   requireText(recurringRun, "before opening Outlook", "calendar-first execution order");

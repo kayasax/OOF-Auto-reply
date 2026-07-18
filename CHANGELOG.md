@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.24] - 2026-07-18
+
+### Fixed
+
+- Added deterministic plain-text renderer fields that preserve template paragraph breaks.
+- Kept whitespace-collapsed canonical fields exclusively for post-write verification.
+- Refreshed the away messages with concise, more natural wording.
+
 ## [0.2.23] - 2026-07-18
 
 ### Fixed

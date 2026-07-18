@@ -34,17 +34,30 @@ function renderTemplate(template, variables) {
   return rendered;
 }
 
-function htmlToCanonicalText(html) {
-  return html
-    .replace(/<br\s*\/?>/gi, " ")
-    .replace(/<\/p\s*>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
+function decodeHtmlText(text) {
+  return text
     .replace(/&nbsp;/gi, " ")
     .replace(/&amp;/gi, "&")
     .replace(/&lt;/gi, "<")
     .replace(/&gt;/gi, ">")
     .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&#39;|&apos;/gi, "'");
+}
+
+function htmlToPlainText(html) {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p\s*>/gi, "\n\n")
+    .replace(/<[^>]+>/g, " ")
+    .split(/\r?\n/)
+    .map((line) => decodeHtmlText(line).replace(/[ \t]+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function htmlToCanonicalText(html) {
+  return htmlToPlainText(html)
     .replace(/\s+/g, " ")
     .replace(/\s+([.,!?;:])/g, "$1")
     .trim();
@@ -78,6 +91,8 @@ function renderMessages(config, period) {
     externalKey,
     internal,
     external,
+    internalPlainText: htmlToPlainText(internal),
+    externalPlainText: htmlToPlainText(external),
     internalCanonicalText: htmlToCanonicalText(internal),
     externalCanonicalText: htmlToCanonicalText(external),
   };
@@ -87,7 +102,7 @@ function selfTest() {
   const config = {
     messages: {
       away_internal: "<p>Away from {reply_start} until {reply_end}.</p>",
-      away_external: "<p>Out from {reply_start} until {reply_end}.</p>",
+      away_external: "<p>Out from {reply_start} until {reply_end}.</p><p>Thank you.</p>",
       non_working_hours_internal: "<p>Internal working hours.</p>",
       non_working_hours_external: "<p>External working hours.</p>",
     },
@@ -103,6 +118,8 @@ function selfTest() {
     result.internalKey !== "away_internal" ||
     !result.internal.includes("Friday, July 17, 2026 at 18:00") ||
     !result.external.includes("Monday, August 3, 2026 at 09:00") ||
+    result.externalPlainText !==
+      "Out from Friday, July 17, 2026 at 18:00 until Monday, August 3, 2026 at 09:00.\n\nThank you." ||
     result.internalCanonicalText !==
       "Away from Friday, July 17, 2026 at 18:00 until Monday, August 3, 2026 at 09:00."
   ) {
@@ -122,4 +139,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { htmlToCanonicalText, renderMessages };
+module.exports = { htmlToCanonicalText, htmlToPlainText, renderMessages };
