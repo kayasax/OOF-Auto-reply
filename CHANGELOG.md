@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to OOF Auto Reply are documented in this file.
+Notable user-visible changes to OOF Auto Reply are documented here. Internal debugging steps and intermediate corrections remain available in Git history rather than being repeated as releases.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -8,276 +8,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [0.2.30] - 2026-07-18
 
-### Changed
-
-- Consolidated five overlapping runtime references into two purpose-specific files.
-- Made `recurring-run.md` the complete scheduled contract, including calendar calculation, Outlook updates, verification, and authentication recovery.
-- Kept first-time discovery and automation reconciliation together in `onboarding.md`.
-- Replaced the old file-by-file validator with a two-reference architecture and critical safety checks.
-
-## [0.2.29] - 2026-07-18
-
-### Fixed
-
-- Made the single Outlook navigation call a hard budget that includes failed calls.
-- Stopped immediately with a browser error when Playwright navigation fails, times out, or returns no usable page.
-- Prevented navigation retries against a broken Scout-managed Playwright session.
-
-## [0.2.28] - 2026-07-18
-
-### Fixed
-
-- Accepted complete modern Outlook pages where Save or Enregistrer appears only after the first edit.
-- Required one bounded post-edit snapshot and an explicit commit instead of guessing that the page autosaves.
-- Allowed already-matching settings to complete without manufacturing a write solely to reveal Save.
-
-## [0.2.27] - 2026-07-18
-
-### Fixed
-
-- Accepted Outlook pages that commit Automatic Replies with OK or Apply instead of Save.
-- Prevented complete classic Automatic Replies pages from being misclassified as unreadable.
-- Suppressed progress narration, reasoning transcripts, and unsolicited manual Teams alerts during scheduled runs.
-
-## [0.2.26] - 2026-07-18
-
-### Fixed
-
-- Allowed one bounded stabilization when Outlook initially renders only its Microsoft logo or loading shell.
-- Bound schedule controls and rendered messages explicitly to the calculator's start and end instead of today's date.
-- Clarified that a blocked run made no write and may leave stale Outlook values visible.
-
-## [0.2.25] - 2026-07-18
-
-### Fixed
-
-- Replaced the ambiguous calendar lookahead instruction with explicit local start and exclusive end bounds.
-- Rejected default, agenda, unbounded, and today-only calendar reads.
-- Required complete pagination and coverage through the full 21st day ahead before Outlook access.
-- Reused cached holiday years instead of fetching them again.
-
-## [0.2.24] - 2026-07-18
-
-### Fixed
-
-- Added deterministic plain-text renderer fields that preserve template paragraph breaks.
-- Kept whitespace-collapsed canonical fields exclusively for post-write verification.
-- Refreshed the away messages with concise, more natural wording.
-
-## [0.2.23] - 2026-07-18
-
-### Fixed
-
-- Preserved the original start of a contiguous weekend, holiday, and leave block on later daily runs.
-- Reduced scheduled Outlook discovery to one current tab, one direct navigation, and one snapshot.
-- Made inbox redirects, logo-only pages, missing controls, and missing Save buttons hard read failures.
-- Prohibited tab reuse, navigation retries, mental date replacement, and autosave inference.
-
-## [0.2.22] - 2026-07-17
-
-### Fixed
-
-- Added explicit private authentication-recovery state instead of guessing browser mode from omitted automation fields or window visibility.
-- Stopped scheduled authentication recovery immediately with user guidance and prohibited inspecting unrelated browser tabs.
-- Kept the optional state backward-compatible with schema version 1.
-
-## [0.2.21] - 2026-07-17
-
-### Fixed
-
-- Replaced raw success-contract output with a concise human-readable run summary.
-- Kept structured blocked codes only for actionable failures with plain-language guidance.
-
-## [0.2.20] - 2026-07-17
-
-### Fixed
-
-- Limited visible executions to authentication recovery only.
-- Restored headless mode immediately when Outlook controls become accessible, before calendar reads or Outlook writes.
-
-## [0.2.19] - 2026-07-17
-
-### Fixed
-
-- Treated Outlook Automatic Reply editor input as plain text and preserved repository URLs literally.
-- Removed unsupported HTML-anchor and rich-text hyperlink creation requirements.
-
-## [0.2.18] - 2026-07-17
-
-### Fixed
-
-- Restored headless recurring execution with temporary visible runs only when Microsoft authentication is required.
-- Restored headless mode automatically after a verified visible authentication run.
-- Required configured HTML anchors to be created and verified as semantic Outlook hyperlinks rather than plain text.
-
-## [0.2.17] - 2026-07-17
-
-### Fixed
-
-- Normalized whitespace when verifying Outlook editor accessibility text.
-- Treated merged paragraphs and omitted accessibility line breaks as formatting differences rather than missing content.
-- Prevented unnecessary rewrites when every expected sentence is already present in order.
-
-## [0.2.16] - 2026-07-17
-
-### Fixed
-
-- Added deterministic message rendering from the current private configuration and computed period.
-- Rejected false away-body matches based on template labels, partial phrases, working-hours text, or pre-OOF banners.
-- Required complete editor text comparison after every Outlook write.
-
-## [0.2.15] - 2026-07-17
-
-### Fixed
-
-- Replaced normal after-hours bodies with dedicated away bodies when the reply period flows directly into confirmed leave.
-- Prevented pre-OOF notices from being appended to away replies.
-- Added dynamic reply-period variables and a regression for the July 17 through August 3 leave period.
-
-## [0.2.14] - 2026-07-17
-
-### Fixed
-
-- Made stable bootstrap rendering and its self-test platform independent so the archive gate passes on Linux release runners and Windows Scout hosts.
-
-## [0.2.13] - 2026-07-17
-
-### Fixed
-
-- Made the bundled contract validator independent of repository-only workflow files.
-- Added a release gate that extracts and tests the exact skill archive before publishing it.
-
-## [0.2.12] - 2026-07-17
-
-### Fixed
-
-- Replaced exploratory Outlook settings navigation with a direct Automatic Replies route and bounded fast path.
-- Moved calendar and deterministic period calculation before browser access so Outlook is read and written once.
-- Prohibited scheduled progress narration, repeated snapshots, unrelated settings exploration, and sentence-by-sentence editor changes.
-
-## [0.2.11] - 2026-07-17
-
-### Fixed
-
-- Made existing headless automations self-migrate to `browserHeadless: false` through Scout's supported automation API during their next run.
-- Required the already-headless migration run to stop before Outlook, with the following run starting visibly.
-
-## [0.2.10] - 2026-07-17
-
-### Fixed
-
-- Required visible Scout browser execution for recurring Outlook access so account selection, sign-in, and MFA can be completed.
-- Added interactive migration detection for existing automations persisted with `browserHeadless: true`.
-- Added contract checks that reject headless Outlook scheduling.
-
-## [0.2.9] - 2026-07-17
-
-### Fixed
-
-- Replaced local CDP, process, Scout-installation, and filesystem-profile browser coupling with supported Scout Playwright tools.
-- Added redistribution contract tests that reject machine-specific browser and automation-state dependencies.
-- Clarified that Microsoft Scout owns browser lifecycle, authentication state, and automation mutations.
-
-## [0.2.8] - 2026-07-17
-
-### Fixed
-
-- Replaced version-specific saved automation prompts with a stable bootstrap that reads the current installed run contract on every execution.
-- Corrected upgrade documentation: importing replacement files cannot rewrite a legacy prompt already persisted by Scout.
-- Added explicit migration detection for automations created before the stable bootstrap.
-
-## [0.2.7] - 2026-07-17
-
-### Fixed
-
-- Included organizer-owned and unanswered OOF events instead of requiring a literal accepted response.
-- Blocked recurring runs when the calendar cannot be read for the full lookahead interval.
-- Required calendar-derived evidence before declaring ordinary workday settings correct.
-- Added a deterministic, regression-tested period calculator covering the July 17 to August 3 pre-leave scenario.
-- Added a dedicated persistent Edge fallback when Scout exposes its managed browser through a debugging pipe instead of a TCP CDP port.
-- Added support for the current Microsoft Scout installation path and explicit authentication and profile-lock failures.
-- Kept the fallback browser open during interactive discovery so its stable profile can retain the sign-in used by scheduled runs.
-
-## [0.2.6] - 2026-07-17
-
 ### Added
 
-- Added this maintained changelog and release checks that require an entry for the version being packaged.
-
-### Fixed
-
-- Extended the last-workday Automatic Replies period through adjacent upcoming leave, weekends, and public holidays until the actual return-day work start.
-- Required the Outlook end date and the return date shown in the upcoming-leave notice to agree.
-
-## [0.2.5] - 2026-07-16
-
-### Fixed
-
-- Made automation setup idempotent by updating one owned automation in place instead of creating a duplicate.
-- Added safe handling for stale automation IDs, conflicting matches, unexpected extra steps, and failed reconciliation.
-- Added a pending setup state so an old production automation cannot run during configuration transitions.
-- Restored recurring schedule properties deterministically and validated scheduled run times.
-
-## [0.2.4] - 2026-07-16
-
-### Fixed
-
-- Replaced the unreliable claim that the HOWTO was opened with a clickable public HOWTO link in setup completion messages.
-
-## [0.2.3] - 2026-07-16
+- Added deterministic calculation of Automatic Replies periods from working hours, OOF calendar events, weekends, and public holidays.
+- Added distinct normal after-hours and full-away messages, with paragraph-preserving rendering and canonical post-write verification.
+- Added optional pre-OOF signature banners, safe automation reconciliation, authentication recovery, update notifications, and clean release packaging.
 
 ### Changed
 
-- Separated Outlook sign-in and public-holiday onboarding expectations into icon-led callouts.
-
-## [0.2.2] - 2026-07-16
-
-### Fixed
-
-- Reused Outlook on the web when it was already open in the Scout-managed browser.
-- Added support for responsive Outlook settings navigation, stable category selectors, bounded retries, and slower panel rendering.
-
-## [0.2.1] - 2026-07-16
-
-### Added
-
-- Added a standard non-working-hours fallback reply when discovery finds no existing message.
+- Reduced the runtime documentation to two focused contracts: `onboarding.md` for setup and explicit changes, and `recurring-run.md` for scheduled execution.
+- Made recurring runs headless by default, with visible browser use limited to Microsoft authentication.
+- Made the saved Scout automation load the current installed run contract so replacement upgrades do not require recreating the schedule.
+- Replaced exploratory Outlook interaction with bounded calendar reads, direct settings routes, complete value comparison, and explicit post-write verification.
 
 ### Fixed
 
-- Improved detection of existing Outlook browser sessions.
+- Preserved the start of contiguous leave periods and calculated the actual return-day work start across weekends, holidays, and adjacent OOF events.
+- Preserved message paragraphs and literal repository URLs when writing Outlook editors.
+- Supported modern deferred Save behavior and classic Save, Enregistrer, OK, and Apply controls without assuming autosave.
+- Prevented duplicate automations, incomplete calendar coverage, repeated navigation, uncontrolled browser retries, and writes after ambiguous failures.
+- Restored headless mode automatically after authentication and kept test mode read-only.
 
 ## [0.2.0] - 2026-07-16
 
-### Changed
+### Added
 
-- Refactored the skill into a concise orchestrator with focused onboarding, discovery, daily-operation, and automation references.
 - Added deterministic configuration validation, automation prompt rendering, contract checks, and clean release packaging.
-- Strengthened explicit confirmation gates before configuration, automation, or Outlook writes.
-
-## [0.1.4] - 2026-07-16
+- Added explicit confirmation gates before configuration, automation, or Outlook writes.
 
 ### Changed
 
-- Refined the initial skill orchestration and safety instructions.
-
-## [0.1.3] - 2026-07-16
-
-### Fixed
-
-- Improved Outlook discovery reliability.
-
-## [0.1.2] - 2026-07-16
-
-### Fixed
-
-- Improved Outlook discovery and first-run behavior.
-
-## [0.1.1] - 2026-07-16
-
-### Changed
-
-- Expanded configuration guidance and onboarding behavior.
+- Refactored the initial skill into a concise orchestrator with dedicated runtime guidance.
 
 ## [0.1.0] - 2026-07-16
 
@@ -286,39 +47,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
 [Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.30...HEAD
-[0.2.30]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.29...v0.2.30
-[0.2.29]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.28...v0.2.29
-[0.2.28]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.27...v0.2.28
-[0.2.27]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.26...v0.2.27
-[0.2.26]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.25...v0.2.26
-[0.2.25]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.24...v0.2.25
-[0.2.24]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.23...v0.2.24
-[0.2.23]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.22...v0.2.23
-[0.2.22]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.21...v0.2.22
-[0.2.21]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.20...v0.2.21
-[0.2.20]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.19...v0.2.20
-[0.2.19]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.18...v0.2.19
-[0.2.18]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.17...v0.2.18
-[0.2.17]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.16...v0.2.17
-[0.2.16]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.15...v0.2.16
-[0.2.15]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...v0.2.15
-[0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
-[0.2.13]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...v0.2.13
-[0.2.12]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.11...v0.2.12
-[0.2.11]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.10...v0.2.11
-[0.2.10]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.9...v0.2.10
-[0.2.9]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.8...v0.2.9
-[0.2.8]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.7...v0.2.8
-[0.2.7]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.6...v0.2.7
-[0.2.6]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.5...v0.2.6
-[0.2.5]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.4...v0.2.5
-[0.2.4]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.1.4...v0.2.0
-[0.1.4]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.1.3...v0.1.4
-[0.1.3]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.1.2...v0.1.3
-[0.1.2]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.1.0...v0.1.1
+[0.2.30]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.0...v0.2.30
+[0.2.0]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/kayasax/OOF-Auto-reply/releases/tag/v0.1.0
