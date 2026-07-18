@@ -45,10 +45,9 @@ Do not add progress narration after the welcome. Work silently until user action
 2. Run `node "<resourceDir>\scripts\check-update.cjs"`. If an update is available, show exactly one prominent line: `🔔 OOF_UPDATE_AVAILABLE installed=<installed> latest=<latest> url=<url>`. Otherwise remain silent.
 3. Run `node "<resourceDir>\scripts\config-status.cjs" --config="<resourceDir>\config.json"`.
 4. Route by invocation and configuration state:
-   - **First run or incomplete setup:** read [references/onboarding.md](references/onboarding.md) and [references/outlook-discovery.md](references/outlook-discovery.md). Perform read-only discovery, then stop at the explicit confirmation gate.
-   - **Confirmed interactive change:** read the relevant onboarding section and show the exact proposed private configuration, Outlook-visible text, and schedule change before writing.
-   - **Recurring run:** an incomplete configuration ends immediately with `OOF_RUN_BLOCKED setup=incomplete`. A complete configuration routes to [references/daily-operation.md](references/daily-operation.md) and [references/automation.md](references/automation.md). Scheduled mode never repeats Work Hours discovery.
-5. After explicit onboarding confirmation, generate the recurring prompt with `node "<resourceDir>\scripts\render-automation.cjs" --mode=<production|test> --resource-dir="<resourceDir>"`, then apply the safe transition in [references/automation.md](references/automation.md). Discover duplicates before writing configuration, disable one existing owned automation before changing configuration, and update it in place. Create one only when none exists.
+   - **First run, incomplete setup, or explicit configuration change:** read only [references/onboarding.md](references/onboarding.md). Perform read-only discovery and stop at its confirmation gate before writing anything.
+   - **Recurring run:** read only [references/recurring-run.md](references/recurring-run.md). Scheduled mode never repeats Work Hours discovery or reads onboarding instructions.
+5. After explicit onboarding confirmation, generate the recurring prompt with `node "<resourceDir>\scripts\render-automation.cjs" --mode=<production|test> --resource-dir="<resourceDir>"`, then apply the reconciliation procedure in [references/onboarding.md](references/onboarding.md).
 6. On an interactive invocation with complete setup, inspect the owned automation before routine work. If its prompt does not begin `OOF Auto Reply stable bootstrap.`, explain that importing files cannot rewrite persisted Scout automation state, then offer the exact in-place migration for explicit confirmation. Do not claim the update is active until the saved prompt is re-read and verified.
 7. Also inspect the owned automation's browser mode. The steady state is `browserHeadless: true`. Visible mode is temporary only when a headless run detects Outlook account selection, sign-in, or MFA. A visible run performs authentication recovery only, restores `browserHeadless: true` as soon as Outlook controls are accessible, and stops; normal work runs next in headless mode. Never claim an updated release alone changes this persisted scheduler field.
 
@@ -72,6 +71,13 @@ Do not add progress narration after the welcome. Work silently until user action
 - Do not install or launch a separate browser during onboarding. Scout owns browser lifecycle and authentication state.
 - Allow one retry only when a new snapshot confirms a transient panel load. Do not explore processes, profiles, or local application directories.
 - A failure or error from `playwright-browser_navigate` is always terminal, regardless of error type. Stop immediately with `OOF_RUN_BLOCKED outlook=browser-error` without calling any other browser tool. The one-call navigation budget is a hard ceiling across successful and failed calls, not permission to retry until one succeeds.
+
+## Reference map
+
+- [references/onboarding.md](references/onboarding.md): one-time setup and explicit configuration changes.
+- [references/recurring-run.md](references/recurring-run.md): the complete scheduled execution contract.
+
+No other runtime reference files are required.
 
 ## Completion
 

@@ -1,23 +1,88 @@
-# Recurring run contract
+# Recurring run
 
-This file is the live contract for the stable recurring automation bootstrap. Skill replacement updates this file without requiring the saved Scout automation prompt to change.
+This is the complete contract for the scheduled automation. Do not read any other reference file during a scheduled run.
 
-## Execution
+## Hard budgets
 
-1. Resolve this skill's current `resourceDir` from the path supplied by the bootstrap prompt.
-2. Read the complete private `config.json` beside `SKILL.md`.
-3. Run `node "<resourceDir>\scripts\config-status.cjs" --config="<resourceDir>\config.json"`. If `usable` is not `true`, stop with `OOF_RUN_BLOCKED setup=incomplete`. Never perform onboarding from this schedule.
-4. Read the owned automation using `setup.host_schedule_id` and `m_get_automation`. Require the exact name `OOF Auto Reply` and exactly one step. Never infer browser mode from an omitted `browserHeadless` field, browser-window visibility, or a previous run. Use only `setup.auth_recovery_pending`, which is optional and defaults to `false` for existing configurations. If it is `true`, this execution is an authentication-recovery run only: navigate directly to Automatic Replies and take one snapshot before calendar or normal Outlook work. If account selection, sign-in, or MFA is shown, stop immediately with `OOF_RUN_BLOCKED outlook=authentication-required next=visible` and one sentence asking the user to authenticate in that exact Scout browser, then rerun. Do not wait indefinitely, inspect another tab, reuse another Outlook session, read calendar, compare bodies, or write Outlook. If the Automatic Replies controls are visible, call `m_update_automation` for the owned ID with only `browserHeadless: true`, require `success: true`, persist `setup.auth_recovery_pending: false`, and stop with: `Outlook authentication is complete. The next scheduled run will be headless.` Never edit Scout's private automation files.
-5. Use `setup.mode` from the validated configuration as the only run mode. It must be `production` or `test`.
-6. If `update_check.enabled` is not `false`, run `node "<resourceDir>\scripts\check-update.cjs"`. If `updateAvailable` is true and `latest` differs from `update_check.last_notified_version`, prepend `🔔 OOF_UPDATE_AVAILABLE installed=<installed> latest=<latest> url=<url>` and persist `latest` to `update_check.last_notified_version`. Otherwise remain silent and do not change the marker. A failed update check never blocks later steps.
-7. Read `references/daily-operation.md` from the current installed skill. Read holiday dates for the current and next year from `holiday_cache`; fetch only a missing country-year. Compute `calendarStart` as today's local date at 00:00 and `calendarEndExclusive` as local 00:00 exactly 22 calendar days later. Call the host calendar-read capability once with both explicit bounds, following pagination until the full interval is returned. A default, unbounded, agenda, or today-only request is forbidden and does not count as a calendar read. For example, on 2026-07-18 in `Europe/Paris`, request `[2026-07-18T00:00:00+02:00, 2026-08-09T00:00:00+02:00)`, which includes all of 2026-08-08. Scheduled runs skip Work hours and use the confirmed configuration. Require returned coverage through at least the end of the 21st day ahead before opening Outlook. Otherwise stop with `OOF_RUN_BLOCKED calendar=range-incomplete start=<calendarStart> end=<calendarEndExclusive>`; never retry with a today-only read.
-8. Treat a non-cancelled `showAs=oof` event as eligible unless declined or tentative. Include organizer-owned, accepted, no-response, and unanswered events. Do not require the literal response value `accepted`.
-9. Run `node "<resourceDir>\scripts\compute-period.cjs"` exactly once with today's local date, confirmed working days and hours, eligible OOF dates, and holiday dates. Use its unchanged JSON output as authoritative. It preserves the start of a contiguous weekend, holiday, and leave block, so a later daily run must not advance an already-started coverage boundary. Never replace `expectedStart`, `expectedEnd`, `returnDate`, or either rendered body with today's date or with a date reasoned from the page. Pass that exact one-line JSON as `--period` to `node "<resourceDir>\scripts\render-messages.cjs" --config="<resourceDir>\config.json"`. Write only its `internalPlainText` and `externalPlainText` values to Outlook, preserving every newline exactly. Use `internalCanonicalText` and `externalCanonicalText` only for normalized verification. Do not calculate, correct, render, select, append, or infer dates or message text yourself.
-10. Read `references/outlook-discovery.md` and execute its Scheduled fast path exactly in the current browser tab. Do not list, select, inspect, or reuse another tab. Do not narrate progress or explore Outlook. A navigation error from `playwright-browser_navigate` is terminal: stop with `OOF_RUN_BLOCKED outlook=browser-error` and do not call `playwright-browser_snapshot` or any other browser tool. The total navigation budget is one call whether it succeeds or fails. Compare the already-computed expected values with the classified fast-path snapshot. Only a Microsoft-logo-only or loading-only first snapshot at the exact target URL permits the reference's single bounded wait and replacement snapshot. A commit button labelled Save, Enregistrer, OK, or Apply is valid. Never reject a complete page because it has OK instead of Save, or because modern Outlook reveals Save or Enregistrer only after the first edit. An inbox redirect or missing editable control after stabilization is unreadable, not permission to retry navigation, switch tabs, infer autosave, or continue. Stop with `OOF_RUN_BLOCKED outlook=unread`; never substitute stale state. When an edit is required and no commit button was initially present, the discovery reference permits exactly one post-edit snapshot to obtain the newly revealed commit ref.
-11. Never report no write required until the calendar result and final Outlook snapshot establish requested calendar start, exclusive calendar end, returned coverage end, nearest eligible OOF block or `none`, traversed non-working dates, expected start, expected end, return date, message variant, and normalized full-body equality with the renderer's canonical text. Normalize whitespace because Outlook accessibility can merge paragraphs and omit visual line breaks. Do not check paragraph boundaries. Labels such as `away_internal`, visual similarity, or an existing OOF banner are not proof of equality. When the variant is `away`, any visible `working hours`, `outside business hours`, `Heads up`, or calendar-banner wording proves a mismatch and requires replacement in production mode.
-12. In `test` mode, perform a read-only dry run. Never toggle, edit, save, or verify an Outlook write.
-13. In `production` mode, use the Scheduled write and verification sequence from the discovery reference. Do not rediscover settings.
-14. During a normal run where `setup.auth_recovery_pending` is false, if Microsoft account selection, sign-in, or MFA appears instead of Automatic Replies controls, call `m_update_automation` for the owned ID with only `browserHeadless: false` and require `success: true`. Persist `setup.auth_recovery_pending: true`, then stop with `OOF_RUN_BLOCKED outlook=authentication-required next=visible` and one sentence asking the user to authenticate in the visible Scout browser, then rerun. Do not attempt credentials, inspect another tab, or continue normal work.
-15. Emit no progress messages, intermediate summaries, reasoning transcript, or manual Teams alert. End with one short human-readable result only. State: whether the run was a normal headless run or visible authentication recovery; the reply period in readable local dates and times; whether internal and external messages already matched or were updated; whether verification succeeded; and whether the next run will be headless or visible for authentication. Omit implementation details, tool counts, JSON, `messageVariant`, and `OOF_RUN_OK`. For example: `Automatic Replies are configured from Friday, July 17 at 18:00 until Monday, August 3 at 09:00. The internal and external away messages were updated and verified. The next scheduled run will be headless.` On a blocked run, never describe the expected period as configured. Explicitly state that no write occurred and existing Outlook dates and messages may remain stale. Keep `OOF_RUN_BLOCKED ...` only for an actionable failure, followed by one plain-language sentence explaining what the user must do.
+| Operation | Maximum |
+| --- | ---: |
+| Calendar query | 1 bounded query, plus required pagination |
+| Outlook navigation before comparison | 1 |
+| Loading stabilization | 1 wait and 1 replacement snapshot |
+| Post-edit commit snapshot | 1, only when Save is initially hidden |
+| Outlook navigation for verification | 1, only after a write |
+| Signature navigation | 1 compare, plus 1 verification only after a write |
+| Tab operations, category clicks, browser code | 0 |
 
-Ordinary workday settings are not expected when next-day traversal joins a weekend or public holiday to eligible upcoming leave. Never continue after an unread calendar or Outlook state.
+A failed call consumes its budget. Never retry a failed navigation. Any navigation connection error, browser error, timeout, empty result, or unusable result ends the run immediately with `OOF_RUN_BLOCKED outlook=browser-error`. Make no further browser calls.
+
+## Run
+
+1. Read `config.json`. Run `scripts/config-status.cjs`. Stop with `OOF_RUN_BLOCKED setup=incomplete` unless it reports `usable: true`.
+2. Read the owned automation by `setup.host_schedule_id`. Require the exact name `OOF Auto Reply` and one step. Use `setup.mode` as the only mode.
+3. Optionally run `scripts/check-update.cjs`. A failure is silent. Announce a newer version once, then persist it in `update_check.last_notified_version`.
+4. Use cached public holidays for the current and next year. Fetch only a missing country-year.
+5. Query the calendar once from local midnight today through local midnight 22 days later, with both bounds explicit. Follow pagination to the end. Reject default, agenda, unbounded, today-only, or incomplete coverage with `OOF_RUN_BLOCKED calendar=range-incomplete`.
+6. An eligible OOF event is not cancelled, declined, or tentative, has `showAs=oof`, and is all-day or covers the configured working window. Organizer-owned, accepted, unanswered, and no-response events are eligible.
+7. Run `scripts/compute-period.cjs` exactly once with today's local date, configured work schedule, eligible OOF dates, and holidays. Do not alter its `expectedStart`, `expectedEnd`, `returnDate`, or `messageVariant`.
+8. Pass that exact result to `scripts/render-messages.cjs`. Outlook bodies come only from `internalPlainText` and `externalPlainText`. Verification uses only `internalCanonicalText` and `externalCanonicalText`.
+9. Execute the Outlook state machine below.
+10. Independently evaluate the confirmed pre-OOF banner as described below, even when Automatic Replies already match.
+11. Emit one short final result. No progress narration, reasoning transcript, JSON, raw success token, or Teams alert.
+
+## Outlook state machine
+
+### 1. Open
+
+Use the current Scout-managed tab. Call `playwright-browser_navigate` exactly once for:
+
+`https://outlook.cloud.microsoft/mail/options/accounts-category/automaticReply`
+
+If navigation fails, stop with `OOF_RUN_BLOCKED outlook=browser-error`. Do not call another browser tool.
+
+Take one snapshot. If it is only a Microsoft logo or loading shell at the exact URL, wait up to 10 seconds for Automatic Replies controls and take one replacement snapshot. No reload or second navigation.
+
+If sign-in, account selection, or MFA appears, update only this automation to `browserHeadless: false`, set `setup.auth_recovery_pending: true`, and stop with `OOF_RUN_BLOCKED outlook=authentication-required next=visible`. Never enter credentials.
+
+A usable page contains the Automatic Replies switch, schedule toggle, start and end controls, internal editor, external toggle, and external editor. Save, Enregistrer, OK, or Apply may be visible now or may appear only after an edit. Missing editable controls stop with `OOF_RUN_BLOCKED outlook=unread`.
+
+### 2. Compare
+
+Compare the switch, scheduled period, start, end, external toggle, and complete editor text with calculator and renderer output. Normalize body whitespace and spaces before punctuation for comparison. Paragraph layout may differ, but every sentence and literal URL must match in order with no extra sentence.
+
+For an `away` message, `working hours`, `outside business hours`, `Heads up`, or calendar-banner wording is always a mismatch.
+
+If all values match, make no Automatic Replies edit or commit. Still evaluate the signature banner before producing the final result.
+
+In `test` mode, report the differences without editing and stop.
+
+### 3. Write
+
+In `production` mode, change only mismatched values:
+
+- Bind start controls only to `expectedStart` and end controls only to `expectedEnd`.
+- Replace each mismatched editor as one operation: click, `Control+A`, then type the corresponding plain-text body once.
+- Preserve newlines and the literal `https://github.com/kayasax/OOF-Auto-reply`.
+- Do not append text, type HTML, or create links manually.
+
+After all edits, click the supported commit button once. If it was absent in the first snapshot, take one post-edit snapshot, require Save, Enregistrer, OK, or Apply, and click it once. If none appears, stop with `OOF_RUN_BLOCKED outlook=write-uncommitted`. Never infer autosave.
+
+### 4. Verify
+
+After a committed write, navigate once to the same direct URL and take one snapshot. Verify the exact switch, period, toggles, and canonical full-body equality. If verification fails, report the mismatch and stop. Do not loop.
+
+## Signature banner
+
+When the nearest eligible future OOF block begins within `pre_oof_banner.lead_time_days`, render the confirmed banner using the calculator result and compare it with the configured default signature. Remove a stale, cancelled, or already-started banner. The banner never modifies an `away` reply body.
+
+In test mode, report the action without writing. In production, navigate once to `https://outlook.cloud.microsoft/mail/options/accounts-category/signatures-subcategory`, update only the configured default signature when different, save once, reopen once, and verify the complete signature body. If the signature already matches and is not stale, make no edit or verification navigation.
+
+## Authentication recovery run
+
+When `setup.auth_recovery_pending` is true, perform no calendar read, comparison, or Outlook write. Browser activity is limited to the Open procedure, including its one optional loading stabilization. If authentication remains visible, leave `browserHeadless: false` and the recovery flag set, then stop. If Automatic Replies controls are visible, require a successful ID-only automation update restoring `browserHeadless: true`, clear the flag, and stop with: `Outlook authentication is complete. The next scheduled run will be headless.`
+
+## Final result
+
+On success, state the local reply period, whether messages already matched or were updated, whether verification succeeded when a write occurred, and that the next run is headless.
+
+On failure, use one actionable `OOF_RUN_BLOCKED` code and state that no confirmed write occurred and existing Outlook values may remain stale.

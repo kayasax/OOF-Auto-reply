@@ -1,42 +1,34 @@
-# First-run onboarding
+# Setup and configuration changes
 
-Use this reference only for first-run setup or an explicitly requested configuration change.
+Use this file only for first-time setup or an explicit configuration change. Scheduled runs use only `recurring-run.md`.
 
-## Read-only discovery
+## Discover, read-only
 
-1. Run the public release check after the welcome. A failure or missing release is silent and never blocks setup.
-2. Do not create, repair, or normalize `config.json`. Ignore any blank, incomplete, or provisional file during discovery.
-3. Detect the same values in production and test mode. Test mode changes write behavior, not discovery quality.
-4. Read Outlook Work Hours, Automatic Replies, and default signature through the deterministic discovery flow.
-5. Infer the holiday country from the detected time zone and cross-check the Outlook locale when available.
-6. In parallel, read calendar, public holidays, and the mandatory mailbox evidence described in [outlook-discovery.md](outlook-discovery.md).
+After the welcome:
 
-## Consolidated summary
+1. Run the release check and configuration status scripts.
+2. Read Outlook Work Hours, Automatic Replies, and the default signature with Scout's supported Playwright tools. Use one direct navigation per settings page, accessible controls, and no browser code, tab exploration, or local browser manipulation.
+3. Read calendar coverage for today through 21 days ahead and cached public holidays.
+4. Identify the signed-in user. Find the newest self-sent Automatic Reply from the last 30 days using localized `Automatic reply:` or `Réponse automatique :` subjects and fetch its complete HTML body. Also fetch the complete newest normal self-sent message containing signature or banner text. Include source timestamps and retry each mailbox read once on HTTP 5xx. Mailbox evidence proves historical wording only.
+5. Never edit Outlook, send mail, change calendar events, write `config.json`, or create an automation during discovery.
 
-Show one concise summary containing:
+If browser-visible wording is unavailable, use the newest automatic reply sent by the signed-in user in the last 30 days. Historical mail proves wording only, not current switch or schedule state. If mailbox inference fails, say `Unavailable due to mailbox error`.
 
-- detected time zone, working days, and exact start and end times;
-- inferred holiday country and its evidence;
-- selected `production` or `test` mode;
-- proposed daily run time before the detected workday begins;
-- exact proposed internal and external wording for away and non-working-hours replies;
-- proposed pre-OOF signature banner wording and enabled state;
-- every uncertainty and its source.
+## Show one confirmation
 
-Include a distinct **Existing Outlook settings found** section with:
+Present one concise summary containing:
 
-- exact backup contact email, or `Not found`;
-- browser-reported Automatic Replies state and period;
-- exact current browser-visible internal and external bodies;
-- exact historical reply body and timestamp when mailbox inference was required;
-- default signature name and exact current or historical leave-banner wording;
-- comparison of the existing banner with the proposed banner.
+- time zone, working days, and hours;
+- holiday country;
+- production or test mode and proposed run time;
+- exact internal and external away messages;
+- exact internal and external non-working-hours messages;
+- backup contact;
+- current Automatic Replies switch, period, and visible bodies;
+- default signature and proposed leave banner;
+- every uncertainty.
 
-If mailbox inference fails, say `Unavailable due to mailbox error`. Do not say `No saved body found`, silently disable a banner, or invent replacement wording.
-
-### Non-working-hours fallback
-
-If browser discovery and mandatory mailbox inference find no existing non-working-hours body, propose this fallback for both internal and external replies:
+If no historical non-working-hours message exists, propose this fallback, rendered with the detected schedule and confirmed backup contact:
 
 > Thank you for your message!
 >
@@ -44,28 +36,24 @@ If browser discovery and mandatory mailbox inference find no existing non-workin
 >
 > If your message requires immediate assistance, I'm kindly asking you to send a message to [{backup_contact_email}](mailto:{backup_contact_email}) mailbox, so that your request can be directed to another available engineer.
 
-Render `{WORKDAYS}`, `{START}`, `{END}`, and `{TZ_ABBR}` from browser-detected work settings. Use `{backup_contact_email}` only when discovery found a backup contact. If it remains unknown, ask for it at the confirmation gate. This is a proposed default only and must be shown exactly before it is saved.
+Ask for one explicit confirmation or correction. Before explicit confirmation, write nothing.
 
-## Explicit confirmation gate
+## Save confirmed setup
 
-Ask for one explicit confirmation or one correction response. If a required value is unknown, ask only for that value. The confirmation request must include the exact Outlook-visible wording, private schedule, mode, and settings that will be saved.
+1. Generate the saved prompt with `scripts/render-automation.cjs`. Never hand-write it.
+2. If `setup.host_schedule_id` exists, read it first and treat it as owned only when its name is exactly `OOF Auto Reply`. List and read every exact-name automation. A candidate is the valid stored-ID match, an automation with the managed or legacy description, or one whose first prompt begins `OOF Auto Reply recurring run, confirmed mode:` or `OOF Auto Reply stable bootstrap.`. Deduplicate by ID.
+3. Any other exact-name result is an ownership conflict. If a conflict exists or more than one candidate remains, make no mutation or configuration write and stop with `OOF_SETUP_BLOCKED automation=duplicate`. Never delete automatically.
+4. Require exactly one step on an existing candidate. Otherwise stop with `OOF_SETUP_BLOCKED automation=steps`.
+5. Disable one safe existing candidate with an ID-only update before changing configuration and require `success: true`.
+6. Write confirmed `config.json` with `setup.status: pending_automation`, `setup.auth_recovery_pending: false`, and the candidate ID when one exists.
+7. Update the candidate in place, or create one only when none exists, using:
+   - name `OOF Auto Reply`;
+   - description `[oof-auto-reply] Keeps Outlook Automatic Replies aligned with calendar OOF events, public holidays, and working hours.`;
+   - the rendered one-step prompt;
+   - the deterministic confirmed schedule;
+   - `triggerType: schedule`, `oneShot: false`, `browserHeadless: true`, and `teamsNotify: auto`;
+   - enabled in production, disabled in test mode.
+8. Require `success: true` from every mutation. Treat it as authoritative for supplied write-only fields omitted by the read API, including `triggerType`, `oneShot`, `browserHeadless`, and `teamsNotify`. Persist the returned ID immediately while setup remains pending, re-read the automation, and verify name, description, one step, prompt, enabled state, and schedule.
+9. Only then set `setup.status: complete`. On failure, keep setup incomplete, disable the automation, and report the matching `OOF_SETUP_BLOCKED` code.
 
-Until the user explicitly confirms this summary:
-
-- do not create or modify `config.json`;
-- do not create an enabled or disabled schedule;
-- do not write to Outlook;
-- do not treat defaults as confirmed values.
-
-## After confirmation
-
-1. Generate the automation prompt with `scripts/render-automation.cjs`; do not hand-rewrite it.
-2. Discover and validate existing automation candidates exactly as defined in [automation.md](automation.md) before writing `config.json`. Multiple or unsafe matches stop without any mutation or configuration write.
-3. For one safe candidate, disable it before changing configuration. For no candidate, no automation mutation occurs before the configuration write.
-4. Write the complete confirmed `config.json` with `update_check: { "enabled": true, "last_notified_version": null }`. Set `setup.mode` and `setup.scheduled_run_time` to the confirmed values, but keep `setup.status: "pending_automation"` so no scheduled prompt can write Outlook during the transition. Preserve a safe candidate's `setup.host_schedule_id` until reconciliation finishes.
-5. Reconcile the automation exactly as defined in [automation.md](automation.md). Update one owned existing automation in place and create a new one only when none exists. A failed update remains disabled and never reports successful setup.
-6. In production mode, reconcile the recurring schedule as enabled with `browserHeadless: true`. Outlook may temporarily require a visible follow-up run for interactive account selection, sign-in, or MFA.
-7. Initialize `setup.auth_recovery_pending` to `false`. This optional runtime field does not change `schema_version: 1`.
-8. In test mode, reconcile a disabled dry-run schedule. It must remain read-only even when manually run.
-9. Immediately after successful creation or update, store the returned host schedule identifier while setup remains pending. After successful automation verification, set `setup.status: "complete"`. If reconciliation fails, leave setup incomplete with the identifier retained for recovery and the automation disabled.
-10. Explain that the host must remain running and that Outlook may occasionally require visible sign-in or MFA.
+Production normally runs headlessly. A scheduled run moves itself temporarily to visible mode only for sign-in or MFA, then restores headless mode through the recovery flow in `recurring-run.md`.

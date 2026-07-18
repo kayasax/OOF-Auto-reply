@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.30] - 2026-07-18
+
+### Changed
+
+- Consolidated five overlapping runtime references into two purpose-specific files.
+- Made `recurring-run.md` the complete scheduled contract, including calendar calculation, Outlook updates, verification, and authentication recovery.
+- Kept first-time discovery and automation reconciliation together in `onboarding.md`.
+- Replaced the old file-by-file validator with a two-reference architecture and critical safety checks.
+
 ## [0.2.29] - 2026-07-18
 
 ### Fixed
