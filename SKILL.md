@@ -71,6 +71,7 @@ Do not add progress narration after the welcome. Work silently until user action
 - Do not use `playwright-browser_run_code`.
 - Do not install or launch a separate browser during onboarding. Scout owns browser lifecycle and authentication state.
 - Allow one retry only when a new snapshot confirms a transient panel load. Do not explore processes, profiles, or local application directories.
+- A failure or error from `playwright-browser_navigate` is always terminal, regardless of error type. Stop immediately with `OOF_RUN_BLOCKED outlook=browser-error` without calling any other browser tool. The one-call navigation budget is a hard ceiling across successful and failed calls, not permission to retry until one succeeds.
 
 ## Completion
 

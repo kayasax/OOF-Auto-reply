@@ -6,6 +6,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.29] - 2026-07-18
+
+### Fixed
+
+- Made the single Outlook navigation call a hard budget that includes failed calls.
+- Stopped immediately with a browser error when Playwright navigation fails, times out, or returns no usable page.
+- Prevented navigation retries against a broken Scout-managed Playwright session.
+
+## [0.2.28] - 2026-07-18
+
+### Fixed
+
+- Accepted complete modern Outlook pages where Save or Enregistrer appears only after the first edit.
+- Required one bounded post-edit snapshot and an explicit commit instead of guessing that the page autosaves.
+- Allowed already-matching settings to complete without manufacturing a write solely to reveal Save.
+
 ## [0.2.27] - 2026-07-18
 
 ### Fixed

@@ -79,6 +79,9 @@ function main() {
   requireText(recurringRun, "existing Outlook dates and messages may remain stale", "blocked stale-state disclosure");
   requireText(recurringRun, "Save, Enregistrer, OK, or Apply", "supported Outlook commit controls");
   requireText(recurringRun, "Never reject a complete page because it has OK instead of Save", "OK button regression");
+  requireText(recurringRun, "reveals Save or Enregistrer only after the first edit", "deferred Save regression");
+  requireText(recurringRun, "OOF_RUN_BLOCKED outlook=browser-error", "terminal navigation failure");
+  requireText(recurringRun, "total navigation budget is one call whether it succeeds or fails", "hard navigation budget");
   requireText(recurringRun, "Emit no progress messages", "silent recurring execution");
   requireText(recurringRun, "manual Teams alert", "unsolicited Teams alert prohibition");
   requireText(recurringRun, "OOF_RUN_BLOCKED calendar=range-incomplete", "calendar range failure gate");
@@ -147,12 +150,17 @@ function main() {
   requireText(discovery, "options/accounts-category/automaticReply", "direct Automatic Replies route");
   requireText(discovery, "exactly one navigation", "bounded browser calls");
   requireText(discovery, "Never call the tabs tool", "single-tab browser contract");
+  requireText(discovery, "including failed calls", "failed navigation budget");
+  requireText(discovery, "Never retry navigation for any reason", "navigation retry prohibition");
   requireText(discovery, "wait up to 10 seconds", "bounded loading-page stabilization");
   requireText(discovery, "Do not navigate again", "loading retry navigation prohibition");
   requireText(discovery, "one replacement snapshot", "bounded loading snapshot retry");
-  requireText(discovery, "Never infer that this page autosaves", "explicit Save requirement");
+  requireText(discovery, "never infer that the page autosaves", "explicit Save requirement");
   requireText(discovery, "OK instead of Save", "classic Outlook OK support");
   requireText(discovery, "Prefer the enabled OK button", "classic Outlook commit action");
+  requireText(discovery, "take exactly one post-edit `playwright-browser_snapshot`", "deferred Save discovery");
+  requireText(discovery, "OOF_RUN_BLOCKED outlook=write-uncommitted", "uncommitted write failure");
+  requireText(discovery, "If every value already matched, make no edit and require no commit", "no-change commit handling");
   requireText(discovery, "Microsoft-logo-only", "ambiguous loading-page stop");
   requireText(recurringRun, "must not advance an already-started coverage boundary", "stable coverage boundary");
   requireText(recurringRun, "Never replace `expectedStart`", "mental date replacement prohibition");
@@ -177,6 +185,7 @@ function main() {
   requireText(discovery, "Visible mode is temporary", "temporary visible authentication");
   requireText(discovery, "skip Work hours", "scheduled Work Hours skip");
   requireText(discovery, "Never use `playwright-browser_run_code`", "run-code prohibition");
+  requireText(skill, "one-call navigation budget is a hard ceiling", "skill navigation failure gate");
 
   const activeRuntimeFiles = [skill, discovery, automation, dailyOperation, recurringRun];
   const forbiddenRuntimeCoupling = [
