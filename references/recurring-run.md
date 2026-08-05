@@ -7,7 +7,7 @@ This is the complete contract for the scheduled automation. Do not read any othe
 | Operation | Maximum |
 | --- | ---: |
 | Calendar query | 1 bounded query, plus required pagination |
-| Outlook navigation before comparison | 1 |
+| Outlook navigation before comparison | 2 (second only for /mail/ redirect recovery) |
 | Loading stabilization | 1 wait and 1 replacement snapshot |
 | Post-edit commit snapshot | 1, only when Save is initially hidden |
 | Outlook navigation for verification | 1, only after a write |
@@ -40,17 +40,24 @@ Use the current Scout-managed tab. Call `playwright-browser_navigate` exactly on
 
 If navigation fails, stop with `OOF_RUN_BLOCKED outlook=browser-error`. Do not call another browser tool.
 
-Take one snapshot. If it is only a Microsoft logo or loading shell at the exact URL, wait up to 10 seconds for Automatic Replies controls and take one replacement snapshot. No reload or second navigation.
+Take one snapshot. Do not evaluate the URL reported by the snapshot — Outlook's SPA routing may show `/mail/` in the URL bar while the settings panel is already rendered. Evaluate **page content only**:
 
-If sign-in, account selection, or MFA appears, update only this automation to `browserHeadless: false`, set `setup.auth_recovery_pending: true`, and stop with `OOF_RUN_BLOCKED outlook=authentication-required next=visible`. Never enter credentials.
+- **Automatic Replies controls visible**: proceed to Compare. This is success regardless of URL.
+- **Microsoft logo, blank shell, or spinner with no controls**: wait up to 10 seconds, then take one replacement snapshot. If controls are now visible, proceed. No further navigation.
+- **Sign-in, account selection, or MFA**: update only this automation to `browserHeadless: false`, set `setup.auth_recovery_pending: true`, and stop with `OOF_RUN_BLOCKED outlook=authentication-required next=visible`. Never enter credentials.
+- **Inbox or mail list with no settings panel**: wait 5 seconds, take one snapshot. If controls appear, proceed. If still no controls, navigate once more to the same URL (consumes the redirect-recovery budget), take one snapshot, and proceed if controls are visible. If controls are still absent, stop with `OOF_RUN_BLOCKED outlook=unread`.
 
-A usable page contains the Automatic Replies switch, schedule toggle, start and end controls, internal editor, external toggle, and external editor. Save, Enregistrer, OK, or Apply may be visible now or may appear only after an edit. Missing editable controls stop with `OOF_RUN_BLOCKED outlook=unread`.
+A usable page contains the Automatic Replies switch, schedule toggle, start and end controls, internal editor, external toggle, and external editor. Save, Enregistrer, OK, or Apply may be visible now or may appear only after an edit.
 
 ### 2. Compare
 
 Compare the switch, scheduled period, start, end, external toggle, and complete editor text with calculator and renderer output. Normalize body whitespace and spaces before punctuation for comparison. Paragraph layout may differ, but every sentence and literal URL must match in order with no extra sentence.
 
+The switch must be ON. If the switch is OFF, that is always a mismatch regardless of all other values.
+
 For an `away` message, `working hours`, `outside business hours`, `Heads up`, or calendar-banner wording is always a mismatch.
+
+For a `non_working_hours` message, any wording that references departure dates, return dates, or being away from a specific date (e.g. `away from`, `out of the office from`, `will not be checking email`) is always a mismatch.
 
 If all values match, make no Automatic Replies edit or commit. Still evaluate the signature banner before producing the final result.
 
@@ -58,12 +65,13 @@ In `test` mode, report the differences without editing and stop.
 
 ### 3. Write
 
-In `production` mode, change only mismatched values:
+In `production` mode, apply changes in this exact order:
 
-- Bind start controls only to `expectedStart` and end controls only to `expectedEnd`.
-- Replace each mismatched editor as one operation: click, `Control+A`, then type the corresponding plain-text body once.
-- Preserve newlines and the literal `https://github.com/kayasax/OOF-Auto-reply`.
-- Do not append text, type HTML, or create links manually.
+1. **Switch**: If the switch is OFF, click it to turn it ON. Take a snapshot and confirm the switch is now ON and the date/message controls are enabled before proceeding. If controls remain disabled after clicking the switch, stop with `OOF_RUN_BLOCKED outlook=controls-unavailable`.
+2. **Schedule checkbox**: If the "send only during a time period" checkbox is unchecked, click it to enable it.
+3. **Dates**: Bind start controls only to `expectedStart` and end controls only to `expectedEnd`. Set the date and time components separately. After typing a time value into a combobox, press Tab to confirm it before moving to the next control.
+4. **Messages**: Replace each mismatched editor as one operation: click, `Control+A`, then type the corresponding `internalPlainText` or `externalPlainText` body once.
+5. **Preserve** newlines and the literal `https://github.com/kayasax/OOF-Auto-reply`. Do not append text, type HTML, or create links manually.
 
 After all edits, click the supported commit button once. If it was absent in the first snapshot, take one post-edit snapshot, require Save, Enregistrer, OK, or Apply, and click it once. If none appears, stop with `OOF_RUN_BLOCKED outlook=write-uncommitted`. Never infer autosave.
 
