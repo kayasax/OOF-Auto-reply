@@ -87,7 +87,13 @@ In test mode, report the action without writing. In production, navigate once to
 
 ## Authentication recovery run
 
-When `setup.auth_recovery_pending` is true, perform no calendar read, comparison, or Outlook write. Browser activity is limited to the Open procedure, including its one optional loading stabilization. If authentication remains visible, leave `browserHeadless: false` and the recovery flag set, then stop. If Automatic Replies controls are visible, require a successful ID-only automation update restoring `browserHeadless: true`, clear the flag, and stop with: `Outlook authentication is complete. The next scheduled run will be headless.`
+When `setup.auth_recovery_pending` is true, perform no calendar read, comparison, or Outlook write. Browser activity is limited to the Open procedure, including its one optional loading stabilization. Apply the following decision in order after the snapshot:
+
+1. **Automatic Replies controls are visible:** require a successful ID-only automation update restoring `browserHeadless: true`, clear `setup.auth_recovery_pending`, and stop with: `Outlook authentication is complete. The next scheduled run will be headless.`
+2. **Authentication, account selection, or MFA is visible:** leave `browserHeadless: false` and the recovery flag set, then stop with `OOF_RUN_BLOCKED outlook=auth-recovery-pending` — the scheduled run will not write to Outlook until the interactive authentication run completes.
+3. **Any other page (Outlook redirected, stale session, or loading failure):** leave `browserHeadless: false` and the recovery flag set, then stop with `OOF_RUN_BLOCKED outlook=auth-recovery-pending` — the scheduled run is intentionally blocked. To recover, run the skill interactively from chat (it detects the completed session and clears the flag automatically) or set `setup.auth_recovery_pending: false` in `config.json` directly.
+
+Do not fall through to `OOF_RUN_BLOCKED outlook=unread` when `auth_recovery_pending` is true. That code is reserved for state-machine failures unrelated to the recovery flag.
 
 ## Final result
 

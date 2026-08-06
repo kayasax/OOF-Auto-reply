@@ -6,6 +6,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.34] - 2026-08-06
+
+### Fixed
+
+- **Misleading exit code when `auth_recovery_pending=true`.** Scheduled runs blocked by the recovery flag emitted `OOF_RUN_BLOCKED outlook=unread` — implying a transient UI read failure — instead of a self-diagnosing code. All three Open-procedure outcomes during a recovery run (controls visible, auth/MFA visible, or any other page such as a stale-session redirect) now emit distinct, actionable results. The fallback to `outlook=unread` while the recovery flag is set is explicitly prohibited. Closes [#8](https://github.com/kayasax/OOF-Auto-reply/issues/8).
+
+### Added
+
+- **Lightweight reset path** for `auth_recovery_pending`. Users can now clear the flag without a full skill reinstall: either run the skill interactively from chat (auto-detects and clears the flag) or set `setup.auth_recovery_pending: false` in `config.json` directly. Documented in `recurring-run.md`, `HOWTO.md`, and `CONFIG-REFERENCE.md`. Closes [#8](https://github.com/kayasax/OOF-Auto-reply/issues/8).
+
 ## [0.2.33] - 2026-08-05
 
 ### Fixed
@@ -186,7 +196,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.14...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.34...HEAD
+[0.2.34]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.33...v0.2.34
 [0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.11...v0.2.12

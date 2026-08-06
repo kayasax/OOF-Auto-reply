@@ -38,6 +38,18 @@ The skill reuses the automation recorded in its private configuration. If that i
 
 That is normal from time to time. The recurring automation normally runs headlessly. If Outlook requires account selection, sign-in, or MFA after security changes or session expiry, the automation switches its next run to visible mode. Complete the displayed prompt directly. After a successful verified run, it returns to headless mode. If authentication is not completed, the skill stops safely without changing Outlook.
 
+## 🔁 Automation shows `OOF_RUN_BLOCKED outlook=auth-recovery-pending`
+
+The scheduled run detected that Outlook requires interactive authentication and has blocked all writes until you complete sign-in. This is intentional — it is a safety gate, not a failure.
+
+To recover:
+
+1. **Run the skill interactively from chat** (type `/oof-auto-reply` or ask your assistant to run the OOF skill). It opens Outlook in the browser. When Automatic Replies controls are visible, the skill clears the recovery flag automatically and restores headless mode.
+
+2. **Or edit `config.json` directly:** open it beside this skill and set `"auth_recovery_pending": false` inside the `"setup"` block. Sign in to [Outlook on the web](https://outlook.cloud.microsoft) first so the session cookie is valid, then let the next scheduled run proceed.
+
+The next clean scheduled run after the flag is cleared confirms Outlook access and reports success.
+
 ## 🔄 The setting did not stay changed
 
 An old Power Automate flow or another automation may still be changing Automatic Replies after this skill saves them. Disable the old flow only after you have confirmed this skill behaves as expected for a few days. Tell the skill once it is disabled so it can stop warning you about the possible conflict.
