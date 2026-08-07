@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.37] - 2026-08-07
+
+### Fixed
+
+- **Upcoming OOF notice in non-working-hours replies**: when `non_working_hours_upcoming_oof_notice.enabled=true` and a confirmed OOF block starts within the configured lead time, `render-messages.cjs` now appends the configured planned leave notice to both internal and external non-working-hours Automatic Reply bodies. Previously the banner could be present in the Outlook signature while the active Automatic Reply body still lacked the planned leave line, and a subsequent automation run could remove the manually corrected text. Closes [#9](https://github.com/kayasax/OOF-Auto-reply/issues/9).
+- `compute-period.cjs` now exposes `nextOofDate` and `nextOofReturnDate` for upcoming OOF blocks, so message rendering can use the actual future leave return date rather than the current non-working-hours return date.
+- Added self-test coverage for the non-working-hours upcoming OOF notice path.
+
 ## [0.2.36] - 2026-08-07
 
 ### Fixed
@@ -217,7 +225,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.36...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.37...HEAD
+[0.2.37]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.36...v0.2.37
 [0.2.36]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.35...v0.2.36
 [0.2.35]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.34...v0.2.35
 [0.2.34]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.33...v0.2.34

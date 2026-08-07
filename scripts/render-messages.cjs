@@ -48,6 +48,15 @@ function renderTemplate(template, variables) {
   return rendered;
 }
 
+function addDays(value, count) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  if (!match) throw new Error(`invalid date: ${value}`);
+  const [, year, month, day] = match;
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  date.setUTCDate(date.getUTCDate() + count);
+  return date.toISOString().slice(0, 10);
+}
+
 function decodeHtmlText(text) {
   return text
     .replace(/&nbsp;/gi, " ")
@@ -89,13 +98,32 @@ function renderMessages(config, period) {
   };
   const internalKey = variant === "away" ? "away_internal" : "non_working_hours_internal";
   const externalKey = variant === "away" ? "away_external" : "non_working_hours_external";
-  const internal = renderTemplate(config.messages?.[internalKey], variables);
-  const external = renderTemplate(config.messages?.[externalKey], variables);
+  let internal = renderTemplate(config.messages?.[internalKey], variables);
+  let external = renderTemplate(config.messages?.[externalKey], variables);
 
   if (variant === "away") {
     const forbidden = /working hours|outside business hours|heads up|📅/i;
     if (forbidden.test(internal) || forbidden.test(external)) {
       throw new Error("away body contains non-working-hours or pre-OOF banner wording");
+    }
+  }
+
+  if (
+    variant === "non_working_hours" &&
+    config.non_working_hours_upcoming_oof_notice?.enabled &&
+    period.nextOofDate &&
+    period.nextOofReturnDate
+  ) {
+    const leadTimeDays = Number(config.pre_oof_banner?.lead_time_days ?? 0);
+    if (leadTimeDays > 0 && period.nextOofDate <= addDays(period.returnDate, leadTimeDays)) {
+      const notice = renderBannerTemplate(config, period.nextOofDate, period.nextOofReturnDate);
+      const canonicalNotice = htmlToCanonicalText(notice);
+      if (!htmlToCanonicalText(internal).includes(canonicalNotice)) {
+        internal += `<p>${notice}</p>`;
+      }
+      if (!htmlToCanonicalText(external).includes(canonicalNotice)) {
+        external += `<p>${notice}</p>`;
+      }
     }
   }
 
@@ -137,6 +165,12 @@ function selfTest() {
       non_working_hours_internal: "<p>Internal working hours.</p>",
       non_working_hours_external: "<p>External working hours.</p>",
     },
+    backup_contact_email: "backup@example.com",
+    pre_oof_banner: {
+      lead_time_days: 7,
+      template: "📅 Heads up, I'll be out of office {oof_first_day}. Back {return_day}. For anything urgent, reach {backup_contact_email}.",
+    },
+    non_working_hours_upcoming_oof_notice: { enabled: true },
   };
   const period = {
     messageVariant: "away",
@@ -157,6 +191,25 @@ function selfTest() {
     throw new Error("away message rendering self-test failed");
   }
   console.log("OOF_MESSAGE_RENDER_SELF_TEST_OK variant=away");
+
+  const nonWorkingPeriod = {
+    messageVariant: "non_working_hours",
+    expectedStart: "2026-08-07T18:00",
+    expectedEnd: "2026-08-10T09:00",
+    returnDate: "2026-08-10",
+    nextOofDate: "2026-08-14",
+    nextOofReturnDate: "2026-08-17",
+  };
+  const nonWorkingResult = renderMessages(config, nonWorkingPeriod);
+  if (
+    !nonWorkingResult.internalPlainText.includes("Friday, August 14, 2026") ||
+    !nonWorkingResult.externalPlainText.includes("Monday, August 17, 2026") ||
+    (nonWorkingResult.internalPlainText.match(/Heads up/g) || []).length !== 1 ||
+    (nonWorkingResult.externalPlainText.match(/Heads up/g) || []).length !== 1
+  ) {
+    throw new Error("non-working-hours upcoming OOF notice self-test failed");
+  }
+  console.log("OOF_NON_WORKING_HOURS_NOTICE_SELF_TEST_OK");
 
   const bannerConfig = {
     backup_contact_email: "backup@example.com",

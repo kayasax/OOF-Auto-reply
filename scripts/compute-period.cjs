@@ -72,6 +72,18 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
     if (traversedNonWorkingDates.length > 370) throw new Error("no available working day found within 370 days");
   }
 
+  const nextOofDate = [...oof].filter((date) => date > today).sort()[0] || null;
+  let nextOofReturnDate = null;
+  if (nextOofDate) {
+    nextOofReturnDate = addDays(nextOofDate, 1);
+    while (isUnavailable(nextOofReturnDate)) {
+      nextOofReturnDate = addDays(nextOofReturnDate, 1);
+      if (addDays(nextOofDate, 371) === nextOofReturnDate) {
+        throw new Error("no return date found for upcoming OOF within 370 days");
+      }
+    }
+  }
+
   const includesUpcomingOof = traversedNonWorkingDates.some((date) => oof.has(date));
   return {
     status,
@@ -80,6 +92,8 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
     returnDate: cursor,
     traversedNonWorkingDates,
     includesUpcomingOof,
+    nextOofDate,
+    nextOofReturnDate,
     messageVariant: status === "away" || includesUpcomingOof ? "away" : "non_working_hours",
   };
 }
