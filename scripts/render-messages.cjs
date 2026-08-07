@@ -115,6 +115,12 @@ function renderMessages(config, period) {
 function renderBannerTemplate(config, oofFirstDay, returnDate) {
   const template = config.pre_oof_banner?.template;
   if (!template) throw new Error("pre_oof_banner.template is missing from config");
+  if (returnDate <= oofFirstDay) {
+    throw new Error(
+      `banner returnDate (${returnDate}) must be after oofFirstDay (${oofFirstDay}). ` +
+      "Run compute-period.cjs with today=oofFirstDay to get the correct OOF-block return date."
+    );
+  }
   const variables = {
     oof_first_day: formatDate(oofFirstDay),
     return_day: formatDate(returnDate),
@@ -166,6 +172,10 @@ function selfTest() {
   ) {
     throw new Error("banner template rendering self-test failed");
   }
+  // Guard: return-date must be after oof-first-day (prevents compute-period period mismatch)
+  let guardThrew = false;
+  try { renderBannerTemplate(bannerConfig, "2026-08-14", "2026-08-10"); } catch { guardThrew = true; }
+  if (!guardThrew) throw new Error("banner returnDate guard self-test failed");
   console.log("OOF_BANNER_RENDER_SELF_TEST_OK");
 }
 

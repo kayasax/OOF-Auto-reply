@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.36] - 2026-08-07
+
+### Fixed
+
+- **Banner return-date bug**: `recurring-run.md` incorrectly passed the current-period `returnDate` from `compute-period` to the banner renderer. When `includesUpcomingOof=false` (e.g. a non-working-hours day before a future OOF block), that date reflects the next working day (e.g. post-weekend Monday) rather than the return from the future OOF block. The contract now explicitly runs `compute-period.cjs` a second time with `today=oofFirstDay` to obtain the correct `bannerReturnDate`.
+- Added a guard in `renderBannerTemplate` that throws if `returnDate <= oofFirstDay`, with a clear message directing callers to use the second compute-period run. Prevents silently writing a banner with a return date that predates the OOF start.
+- Added a self-test for the returnDate guard in `render-messages.cjs --self-test`.
+
 ## [0.2.35] - 2026-08-07
 
 ### Fixed
@@ -209,7 +217,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.35...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.36...HEAD
+[0.2.36]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.35...v0.2.36
 [0.2.35]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.34...v0.2.35
 [0.2.34]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.33...v0.2.34
 [0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
