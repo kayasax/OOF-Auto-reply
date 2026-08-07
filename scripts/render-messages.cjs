@@ -24,6 +24,20 @@ function formatWallTime(value) {
   return `${dateText} at ${hour}:${minute}`;
 }
 
+function formatDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  if (!match) throw new Error(`invalid date: ${value}`);
+  const [, year, month, day] = match;
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
+
 function renderTemplate(template, variables) {
   if (typeof template !== "string" || !template.trim()) throw new Error("message template is missing");
   const rendered = template.replace(/\{([a-z_]+)\}/gi, (token, name) => {
@@ -98,6 +112,17 @@ function renderMessages(config, period) {
   };
 }
 
+function renderBannerTemplate(config, oofFirstDay, returnDate) {
+  const template = config.pre_oof_banner?.template;
+  if (!template) throw new Error("pre_oof_banner.template is missing from config");
+  const variables = {
+    oof_first_day: formatDate(oofFirstDay),
+    return_day: formatDate(returnDate),
+    backup_contact_email: config.backup_contact_email || "",
+  };
+  return renderTemplate(template, variables);
+}
+
 function selfTest() {
   const config = {
     messages: {
@@ -126,11 +151,35 @@ function selfTest() {
     throw new Error("away message rendering self-test failed");
   }
   console.log("OOF_MESSAGE_RENDER_SELF_TEST_OK variant=away");
+
+  const bannerConfig = {
+    backup_contact_email: "backup@example.com",
+    pre_oof_banner: {
+      template: "📅 Heads up, I'll be out of office {oof_first_day}. Back {return_day}. For anything urgent, reach {backup_contact_email}.",
+    },
+  };
+  const banner = renderBannerTemplate(bannerConfig, "2026-07-20", "2026-08-03");
+  if (
+    !banner.includes("Monday, July 20, 2026") ||
+    !banner.includes("Monday, August 3, 2026") ||
+    !banner.includes("backup@example.com")
+  ) {
+    throw new Error("banner template rendering self-test failed");
+  }
+  console.log("OOF_BANNER_RENDER_SELF_TEST_OK");
 }
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args["self-test"]) return selfTest();
+  if (args.mode === "banner") {
+    if (!args.config || !args["oof-first-day"] || !args["return-date"]) {
+      throw new Error("--config, --oof-first-day, and --return-date are required for banner mode");
+    }
+    const config = JSON.parse(fs.readFileSync(String(args.config), "utf8"));
+    console.log(renderBannerTemplate(config, String(args["oof-first-day"]), String(args["return-date"])));
+    return;
+  }
   if (!args.config || !args.period) throw new Error("--config and --period are required");
   const config = JSON.parse(fs.readFileSync(String(args.config), "utf8"));
   const period = JSON.parse(String(args.period));
@@ -139,4 +188,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { htmlToCanonicalText, htmlToPlainText, renderMessages };
+module.exports = { htmlToCanonicalText, htmlToPlainText, renderMessages, renderBannerTemplate };

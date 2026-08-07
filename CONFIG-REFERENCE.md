@@ -38,7 +38,7 @@
 | --- | --- |
 | `pre_oof_banner.enabled` | Shows a short leave notice in the default Outlook signature before confirmed leave. Disabled by default. |
 | `pre_oof_banner.lead_time_days` | Number of calendar days before leave that the banner begins. |
-| `pre_oof_banner.wording` | Approved banner text or HTML. |
+| `pre_oof_banner.template` | Banner template supporting `{oof_first_day}`, `{return_day}`, and `{backup_contact_email}` placeholders. Rendered from calendar data on every run — no manual update needed between leave periods. Example: `"📅 Heads up, I'll be out of office {oof_first_day}. Back {return_day}. For anything urgent, reach {backup_contact_email}."` |
 | `non_working_hours_upcoming_oof_notice.enabled` | Appends the same leave notice only when the selected reply remains a normal non-working-hours reply. It never modifies an away reply. |
 
 ## Message fields

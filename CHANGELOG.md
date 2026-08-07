@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.35] - 2026-08-07
+
+### Fixed
+
+- Replaced the static `pre_oof_banner.wording` config field with a `pre_oof_banner.template` that supports `{oof_first_day}`, `{return_day}`, and `{backup_contact_email}` placeholders. The banner is now rendered from calendar data on every run, so no manual config edit is needed between leave periods. Existing static wording required a manual update after each OOF block ended, which users inevitably forgot.
+
+### Added
+
+- `formatDate()` and `renderBannerTemplate()` functions in `scripts/render-messages.cjs`. Callable via `--mode=banner --oof-first-day=YYYY-MM-DD --return-date=YYYY-MM-DD --config=path`.
+- Banner rendering self-test in `render-messages.cjs --self-test`.
+- Updated recurring-run.md Signature banner section: explicit steps to compute `oofFirstDay` from calendar events and call `render-messages.cjs` for deterministic banner text.
+- Updated `CONFIG-REFERENCE.md` to document template variables.
+
 ## [0.2.34] - 2026-08-06
 
 ### Fixed
@@ -196,7 +209,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial public release with Outlook discovery, calendar-aware Automatic Replies, configuration guidance, update checks, documentation, and release packaging.
 
-[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.34...HEAD
+[Unreleased]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.35...HEAD
+[0.2.35]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.34...v0.2.35
 [0.2.34]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.33...v0.2.34
 [0.2.14]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.13...v0.2.14
 [0.2.13]: https://github.com/kayasax/OOF-Auto-reply/compare/v0.2.12...v0.2.13

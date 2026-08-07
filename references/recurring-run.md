@@ -81,7 +81,12 @@ After a committed write, navigate once to the same direct URL and take one snaps
 
 ## Signature banner
 
-When the nearest eligible future OOF block begins within `pre_oof_banner.lead_time_days`, render the confirmed banner using the calculator result and compare it with the configured default signature. Remove a stale, cancelled, or already-started banner. The banner never modifies an `away` reply body.
+When the nearest eligible future OOF block begins within `pre_oof_banner.lead_time_days` calendar days from today:
+
+1. Identify `oofFirstDay`: the start date (YYYY-MM-DD) of the earliest eligible OOF calendar event that starts after today.
+2. Run `scripts/render-messages.cjs --mode=banner --config="<resourceDir>/config.json" --oof-first-day=<oofFirstDay> --return-date=<returnDate>` where `returnDate` comes from the compute-period output. The rendered output is the expected banner text.
+3. Compare the expected banner text with the current content of the configured default signature (`pre_oof_banner.default_signature_name`).
+4. Remove a stale, cancelled, or already-started banner. The banner never modifies an `away` reply body.
 
 In test mode, report the action without writing. In production, navigate once to `https://outlook.cloud.microsoft/mail/options/accounts-category/signatures-subcategory`, update only the configured default signature when different, save once, reopen once, and verify the complete signature body. If the signature already matches and is not stale, make no edit or verification navigation.
 

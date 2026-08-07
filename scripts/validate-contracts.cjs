@@ -85,6 +85,9 @@ function main() {
   requireText(renderer, "externalPlainText", "paragraph-preserving external body");
   requireText(renderer, "internalCanonicalText", "canonical verification body");
   requireText(renderer, '.replace(/<\\/p\\s*>/gi, "\\n\\n")', "paragraph rendering");
+  requireText(renderer, "renderBannerTemplate", "banner template renderer");
+  requireText(renderer, "oof_first_day", "banner OOF first day variable");
+  requireText(renderer, "return_day", "banner return day variable");
 
   requireText(changelog, "## [Unreleased]", "unreleased changelog section");
   requireText(changelog, `## [${version}] - `, "current version changelog entry");
