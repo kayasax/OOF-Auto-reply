@@ -6,6 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.2.38] - 2026-10-23
+
+### Fixed
+
+- **Multi-day OOF blocks missed**: the contract now forbids any `isAllDay` condition. Vacation-system events arrive as multi-day timed blocks (`isAllDay=false`, midnight to midnight), and every date in such a block counts as an OOF date. A query that required all-day events missed a full leave and left the wrong message set.
+- **Morning run keeps the incoming overnight interval**: `compute-period.cjs` accepts `--now=HH:MM`; before work starts on an available working day it retains the interval that ends at today's work start instead of replacing it with tonight's. Self-tests added.
+- **Verification mismatch no longer a dead end**: a real mismatch now triggers up to 3 correction cycles before the run is reported blocked, instead of stopping immediately.
+- **Account-picker recovery**: the run clicks the exact signed-in work account when Outlook bounces through a sign-in picker, and only falls back to the visible-browser recovery when that fails.
+- **Expired period guard**: the run refuses to save an interval that has already expired (`period=expired-before-write`).
+- **Outlook input recipe**: documented the controls that work in the French web UI (listbox time pickers, date-picker month arrow, `input[role=switch]`), the reminder-popup overlay that blocks clicks, the page's self-reload that requires a single-call write, and how to clear editor bodies reliably. Browser code is now explicitly allowed for the write and verification reads.- **Post-return stale signature banner never cleaned**: banner handling is now a symmetric reconcile. The recurring run computes the desired banner state (present only when an eligible OOF is within lead time, absent otherwise) and removes any managed banner when none is due. Previously the signature-banner step was gated behind having an upcoming or active OOF, so a stale banner left after the return day was never removed. A cheap `pre_oof_banner.active` config marker avoids an extra signature navigation in the common no-OOF steady state.
+
+### Added
+
+- **Auth-failure notification**: when a scheduled run stops on an auth-related block (`authentication-required`, `auth-recovery-pending`, or `browser-error`), it now sends at most one Teams alert per calendar day (guarded by `setup.auth_notified_date`) telling the user to re-auth by running the skill interactively. Prevents the automation from staying silently auth-blocked for days while Automatic Replies and the banner stop updating. The marker is cleared on any successful run.
+
 ## [0.2.37] - 2026-08-07
 
 ### Fixed

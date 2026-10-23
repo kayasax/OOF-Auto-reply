@@ -36,7 +36,7 @@ function parseList(value) {
     .filter(Boolean);
 }
 
-function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], holidayDates = [] }) {
+function computePeriod({ today, now, workingDays, workStart, workEnd, oofDates = [], holidayDates = [] }) {
   const current = parseDate(today, "today");
   const configuredDays = new Set(workingDays);
   const oof = new Set(oofDates);
@@ -47,14 +47,16 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
   }
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(workStart || "")) throw new Error("workStart must be HH:MM");
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(workEnd || "")) throw new Error("workEnd must be HH:MM");
+  if (now !== undefined && !/^([01]\d|2[0-3]):[0-5]\d$/.test(now)) throw new Error("now must be HH:MM");
   for (const value of [...oof, ...holidays]) parseDate(value, "OOF or holiday date");
 
   const isConfiguredWorkday = (date) => configuredDays.has(DAY_CODES[parseDate(date, "date").getUTCDay()]);
   const isUnavailable = (date) => !isConfiguredWorkday(date) || oof.has(date) || holidays.has(date);
   const status = oof.has(today) || holidays.has(today) ? "away" : "workday";
+  const incomingNight = now !== undefined && now < workStart && !isUnavailable(today);
   let coverageStartDate = today;
 
-  if (isUnavailable(today)) {
+  if (isUnavailable(today) || incomingNight) {
     let previous = previousDay(today);
     while (isUnavailable(previous)) {
       previous = previousDay(previous);
@@ -64,7 +66,7 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
   }
 
   const traversedNonWorkingDates = [];
-  let cursor = addDays(today, 1);
+  let cursor = incomingNight ? today : addDays(today, 1);
 
   while (isUnavailable(cursor)) {
     traversedNonWorkingDates.push(cursor);
@@ -99,12 +101,31 @@ function computePeriod({ today, workingDays, workStart, workEnd, oofDates = [], 
 }
 
 function selfTest() {
+  const assert = require("node:assert/strict");
   const common = {
     workingDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
     workStart: "09:00",
     workEnd: "18:00",
     holidayDates: [],
   };
+  const morning = computePeriod({ ...common, today: "2026-09-08", now: "08:30" });
+  assert.equal(morning.expectedStart, "2026-09-07T18:00");
+  assert.equal(morning.expectedEnd, "2026-09-08T09:00");
+  const monday = computePeriod({ ...common, today: "2026-09-14", now: "08:30" });
+  assert.equal(monday.expectedStart, "2026-09-11T18:00");
+  assert.equal(monday.expectedEnd, "2026-09-14T09:00");
+  for (const now of ["09:00", "17:30"]) {
+    const period = computePeriod({ ...common, today: "2026-09-08", now });
+    assert.equal(period.expectedStart, "2026-09-08T18:00");
+    assert.equal(period.expectedEnd, "2026-09-09T09:00");
+  }
+  for (const absence of [{ oofDates: ["2026-09-08"] }, { holidayDates: ["2026-09-08"] }]) {
+    const period = computePeriod({ ...common, ...absence, today: "2026-09-08", now: "08:30" });
+    assert.equal(period.expectedStart, "2026-09-07T18:00");
+    assert.equal(period.expectedEnd, "2026-09-09T09:00");
+    assert.equal(period.messageVariant, "away");
+  }
+  assert.throws(() => computePeriod({ ...common, today: "2026-09-08", now: "24:00" }), /now must/);
   const nextWeekLeave = computePeriod({
     ...common,
     today: "2026-07-17",
@@ -182,6 +203,7 @@ function main() {
   if (args["self-test"]) return selfTest();
   const result = computePeriod({
     today: String(args.today || ""),
+    now: args.now === undefined ? undefined : String(args.now),
     workingDays: parseList(args["working-days"]),
     workStart: String(args["work-start"] || ""),
     workEnd: String(args["work-end"] || ""),
