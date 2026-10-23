@@ -59,6 +59,9 @@ function main() {
   requireText(recurring, "today-only", "calendar range rejection");
   requireText(recurring, "Follow pagination", "calendar pagination");
   requireText(recurring, "scripts/compute-period.cjs", "deterministic period");
+  requireText(recurring, "--now=HH:MM", "local-time-aware morning period");
+  requireText(recurring, "period=expired-before-write", "expired morning write gate");
+  requireText(calculator, "incomingNight ? today", "incoming overnight coverage");
   requireText(recurring, "scripts/render-messages.cjs", "deterministic messages");
   requireText(recurring, "OOF_RUN_BLOCKED outlook=browser-error", "browser failure gate");
   requireText(recurring, "OOF_RUN_BLOCKED outlook=write-uncommitted", "commit failure gate");

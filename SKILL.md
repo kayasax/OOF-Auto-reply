@@ -49,7 +49,7 @@ Do not add progress narration after the welcome. Work silently until user action
    - **Recurring run:** read only [references/recurring-run.md](references/recurring-run.md). Scheduled mode never repeats Work Hours discovery or reads onboarding instructions.
 5. After explicit onboarding confirmation, generate the recurring prompt with `node "<resourceDir>\scripts\render-automation.cjs" --mode=<production|test> --resource-dir="<resourceDir>"`, then apply the reconciliation procedure in [references/onboarding.md](references/onboarding.md).
 6. On an interactive invocation with complete setup, inspect the owned automation before routine work. If its prompt does not begin `OOF Auto Reply stable bootstrap.`, explain that importing files cannot rewrite persisted Scout automation state, then offer the exact in-place migration for explicit confirmation. Do not claim the update is active until the saved prompt is re-read and verified.
-7. Also inspect the owned automation's browser mode. The steady state is `browserHeadless: true`. Visible mode is temporary only when a headless run detects Outlook account selection, sign-in, or MFA. A visible run performs authentication recovery only, restores `browserHeadless: true` as soon as Outlook controls are accessible, and stops; normal work runs next in headless mode. Never claim an updated release alone changes this persisted scheduler field.
+7. Also inspect the owned automation's browser mode. The steady state is `browserHeadless: true`. Visible mode is temporary only when a headless run cannot pass Outlook account selection by clicking the local Microsoft 365 UPN, or detects sign-in or MFA. A visible run performs authentication recovery only, restores `browserHeadless: true` as soon as Outlook controls are accessible, and stops; normal work runs next in headless mode. Never claim an updated release alone changes this persisted scheduler field.
 
 ## Non-negotiable gates
 
@@ -66,6 +66,7 @@ Do not add progress narration after the welcome. Work silently until user action
 
 - Use only Scout's supported Playwright browser tools for Outlook discovery and writes.
 - Use snapshots and accessible controls. Do not depend on local Scout installation files, CDP ports, OS processes, or filesystem browser profiles.
+- A "Pick an account" page is not an authentication failure when the local Microsoft 365 UPN is listed. Select the exact account matching `m_m365_status.upn`, then continue from the resulting snapshot.
 - Scheduled mode must skip Work Hours and use confirmed configuration values.
 - Do not use `playwright-browser_run_code`.
 - Do not install or launch a separate browser during onboarding. Scout owns browser lifecycle and authentication state.
